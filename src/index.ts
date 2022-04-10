@@ -1,136 +1,150 @@
+import * as utils from './utils';
 // import { compareTwoStrings } from 'string-similarity';
-import * as deepStrictEqual from 'fast-deep-equal/es6';
 
-import { inspect } from 'util';
-function logAll(...args: unknown[]): void {
-	// eslint-disable-next-line no-console
-	console.log(...args.map(x => inspect(x, { depth: null, colors: true })));
-}
-
-
-type Type = 'array' | 'bigint' | 'boolean' | 'null' | 'number' | 'object' | 'string' | 'undefined';
+type PropType = Prop[] | Record<string, Prop> | string | 'bigint' | 'boolean' | 'null' | 'number' | 'string' | 'undefined';
 interface Prop {
-	values: Value[];
-	types: Parsed[];
-	optional: boolean;
+	types: PropType[];
+	optional?: true;
 }
 
-type Parsed = Prop[] | Record<string, Prop> | 'bigint' | 'boolean' | 'null' | 'number' | 'string' | 'undefined';
-type Value = Array<unknown> | bigint | boolean | number | object | string | null | undefined;
+function parseObj(objs: object[]): Record<string, Prop> {
+	const result: Record<string, Prop> = {};
 
-// #region parse
-const typeof2 = (thing: unknown): Type => {
-	if(thing === null) return 'null';
-	if(Array.isArray(thing)) return 'array';
-	const type = typeof thing;
+	const allKeys = utils.joinKeys(...objs);
+	for(const key of allKeys){
+		const objsWithKey = objs.filter(x => key in x).map(x => x[key] as unknown);
+		result[key] = parse(objsWithKey);
 
-	if(type === 'symbol' || type === 'function'){
-		throw new Error(`Typeof ${type} is not supported`);
-	}
-
-	return type;
-};
-
-function parse(thing: Value): Prop {
-	const type = typeof2(thing);
-
-	if(type === 'array'){
-		return {
-			values: [thing],
-			types: [(thing as Value[]).map(parse)],
-			optional: false,
-		};
-	}
-	if(type === 'object'){
-		const obj = {};
-
-		for(const key in thing as object){
-			obj[key] = parse((thing as object)[key]);
+		if(objsWithKey.length !== objs.length){
+			(result[key] as Prop).optional = true;
 		}
+	}
+	return result;
+}
 
-		return {
-			values: [thing],
-			types: [obj],
-			optional: false,
-		};
+function parseArr(arrs: unknown[][]): Prop[] {
+	// eslint-disable-next-line no-confusing-arrow
+	const maxLength = arrs.reduce<number>((acc, arr) =>
+		acc > arr.length ? acc : arr.length, 0
+	);
+
+	const result: Prop[] = [];
+
+	for(let i = 0; i < maxLength; i++){
+		const things = arrs.filter(arr => i in arr).map(arr => arr[i]);
+		result[i] = parse(things);
+
+		if(things.length !== arrs.length){
+			(result[i] as Prop).optional = true;
+		}
 	}
 
-	return {
-		values: [thing],
-		types: [type],
-		optional: false,
+	return result;
+}
+
+function parse(things: unknown[]): Prop {
+	const types = utils.filterDuplicates(things.map(utils.typeof2));
+	const prop: Prop = {
+		types: types.filter(x => x !== 'object' && x !== 'array') as PropType[],
 	};
-}
-// #endregion
 
-// #region joining types
-function filterDuplicates<T>(arr: T[]): T[] {
-	const final: T[] = [];
+	if(types.includes('object')){
+		const objs: object[] = things.filter(x =>
+			typeof x === 'object' && x !== null && !Array.isArray(x)
+		) as object[];
 
-	for(const item of arr){
-		if(!final.some(x => deepStrictEqual(x, item))){
-			final.push(item);
-		}
+		prop.types.push(parseObj(objs));
 	}
 
-	return final;
-}
+	if(types.includes('array')){
+		const arrays = things.filter(x => Array.isArray(x)) as unknown[][];
 
-function joinArrays<T>(...arrays: T[][]): T[] {
-	return filterDuplicates(([] as T[]).concat(...arrays));
-}
+		prop.types.push(parseArr(arrays));
+	}
 
-function joinKeys(...objs: object[]): string[] {
-	return joinArrays(...objs.map(Object.keys));
-}
+	if(types.length === 1 && things.length !== 1 && utils.arrayHasOneValue(things)){
+		let thing = things[0] as bigint | boolean | number | string | null | undefined;
+		if(thing === null) thing = 'null';
+		if(typeof thing === 'undefined') thing = 'undefined';
 
-function join(things: Prop[]): Prop {
+		return {
+			types: [thing.toString()],
+		};
+	}
 
-}
-// #endregion
-
-// #region stringify
-function indent(str: string, indentation = '\t'): string {
-	return str.replace(/^/gm, indentation);
-}
-
-function stringify(prop: Prop): string {
-
+	return prop;
 }
 // #endregion
-
-export default function TSify(...things: Value[]): string {
-	const parsed = things.map(parse);
-	const final = join(parsed);
-
-	return final.types.map(stringify).join(' | ');
-}
-
-logAll(parse({
-	a: 123,
-	b: {
-		c: 'hello',
-	},
-	d: [false, true],
-}));
 
 /*
-
-
 {
-	a: 123,
-	b: {
-		c: 'hello',
-	},
-	d: [false, true]
+  types: [
+    [
+      { types: [ '1' ] },
+      { types: [ '2' ] },
+      { types: [ '3' ] },
+      { types: [ 'number' ], optional: true }
+    ]
+  ]
 }
 {
-	a: 'asd',
-	b: {
-		c: 'hello',
-	},
-	d: [false, true]
+  types: [
+    {
+      a: { types: [ 'number', 'string' ] },
+      b: {
+        types: [
+          { c: { types: [ 'string' ] } }
+        ],
+        optional: true
+      },
+      d: {
+        types: [
+          [ { types: [ 'false' ] }, { types: [ 'true' ] } ]
+        ]
+      }
+    }
+  ]
 }
-
 */
 
+function stringify(type: Prop | PropType): string {
+	if(typeof type === 'string') return type;
+	if('types' in type && Array.isArray(type.types)){
+		return (type as Prop).types.map(stringify).join(' | ');
+	}
+
+	if(Array.isArray(type)){
+		return `[${type.map(t => stringify(t) + (t.optional ? '?' : '')).join(', ')}]`;
+	}
+
+	let str = '';
+	const keys = Object.keys(type);
+	for(const key in type){
+		const end = key === keys[keys.length - 1] ? '' : '\n';
+		const needsQuotes = key.includes('.');
+		const t = type[key] as Prop;
+
+		str += `${needsQuotes ? `'${key}'` : key}${t.optional ? '?' : ''}: ${stringify(t)};${end}`;
+	}
+
+	return `{\n${utils.indent(str)}\n}`;
+}
+// #endregion
+
+export default function TSify(...things: unknown[]): string {
+	const parsed = parse(things);
+
+	return parsed.types.map(stringify).join(' | ');
+}
+
+import { writeFileSync } from 'fs';
+
+export function toFile(file: string, ...things: unknown[]): void {
+	writeFileSync(file, TSify(...things));
+}
+/*
+import { readFileSync } from 'fs';
+toFile('raw.d.ts', JSON.parse(
+	readFileSync(__dirname + '/raw.json').toString()
+));
+*/
