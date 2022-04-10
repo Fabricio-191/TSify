@@ -37,6 +37,7 @@
 		"allowJs": true,
 		"forceConsistentCasingInFileNames": true,
 		"suppressImplicitAnyIndexErrors": true,
+		"experimentalDecorators": true
 	},
 	"include": ["src", "raw.d.ts", "test"],
 	"exclude": ["lib"],

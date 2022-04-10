@@ -17,7 +17,7 @@ export function filterDuplicates<T>(arr: T[]): T[] {
 	return result;
 }
 
-function joinArrays<T>(...arrays: T[][]): T[] {
+export function joinArrays<T>(...arrays: T[][]): T[] {
 	return filterDuplicates(([] as T[]).concat(...arrays));
 }
 
@@ -33,35 +33,11 @@ export function indent(str: string, indentation = '\t'): string {
 	return str.replace(/^/gm, indentation);
 }
 
-type Type = 'array' | 'bigint' | 'boolean' | 'null' | 'number' | 'object' | 'string' | 'undefined';
-export function typeof2(thing: unknown): Type {
-	if(thing === null) return 'null';
-	if(Array.isArray(thing)) return 'array';
-	const type = typeof thing;
-
-	if(type === 'symbol' || type === 'function'){
-		throw new Error(`Type ${type} is not supported`);
-	}
-
-	return type;
+export function linesCount(str: string): number {
+	return str.split('\n').length;
 }
 
-/*
-function arrayIsHomogeneous(arr: unknown[]): boolean {
-	return arrayHasOneValue(arr.map(typeof2));
-}
-
-function indentInner(str: string, indentation = '\t'): string {
-	const lines = str.split('\n');
-
-	for(let i = 1; i < lines.length - 1; i++){
-		lines[i] = indentation + (lines[i] as string);
-	}
-
-	return lines.join('\n');
-}
-
-function objectSimilarity(a: object, b: object): number {
+export function objectSimilarity(a: object, b: object): number {
 	if(deepStrictEqual(a, b)) return 1;
 	let similarity = 0;
 
@@ -97,5 +73,82 @@ function objectSimilarity(a: object, b: object): number {
 	}
 
 	return similarity > 1 ? 1 : similarity;
+}
+
+/*
+function arrayIsHomogeneous(arr: unknown[]): boolean {
+	return arrayHasOneValue(arr.map(typeof2));
+}
+
+function indentInner(str: string, indentation = '\t'): string {
+	const lines = str.split('\n');
+
+	for(let i = 1; i < lines.length - 1; i++){
+		lines[i] = indentation + (lines[i] as string);
+	}
+
+	return lines.join('\n');
+}
+
+
+function parse(cache: TypesCache, things: unknown[]): Prop {
+	const types = utils.filterDuplicates(things.map(utils.typeof2));
+	const prop: Prop = {
+		types: types.filter(x => x !== 'object' && x !== 'array') as PropType[],
+	};
+
+	if(types.includes('object')){
+		const objs: object[] = things.filter(x =>
+			typeof x === 'object' && x !== null && !Array.isArray(x)
+		) as object[];
+
+		const result: Record<string, Prop> = {};
+
+		const allKeys = utils.joinKeys(...objs);
+		for(const key of allKeys){
+			const objsWithKey = objs.filter(x => key in x).map(x => x[key] as unknown);
+			result[key] = parse(cache, objsWithKey);
+
+			if(objsWithKey.length !== objs.length){
+				(result[key] as Prop).optional = true;
+			}
+		}
+
+		prop.types.push(cache.manage(result));
+	}
+
+	if(types.includes('array')){
+		const arrays = things.filter(x => Array.isArray(x)) as unknown[][];
+
+		// eslint-disable-next-line no-confusing-arrow
+		const maxLength = arrays.reduce<number>((acc, arr) =>
+			acc > arr.length ? acc : arr.length, 0
+		);
+
+		const result: Prop[] = [];
+
+		for(let i = 0; i < maxLength; i++){
+			const things = arrays.filter(arr => i in arr).map(arr => arr[i]);
+			result[i] = parse(cache, things);
+
+			if(things.length !== arrays.length){
+				(result[i] as Prop).optional = true;
+			}
+		}
+
+		prop.types.push(cache.manage(result));
+	}
+
+	if(types.length === 1 && things.length !== 1 && utils.arrayHasOneValue(things)){
+		let thing = things[0] as bigint | boolean | number | string | null | undefined;
+		if(thing === null) thing = 'null';
+		if(typeof thing === 'undefined') thing = 'undefined';
+
+		return {
+			types: [thing.toString()],
+		};
+	}
+
+	return prop;
 }
 */
