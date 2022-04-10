@@ -4,7 +4,7 @@
   "deprecated": false,
   "scripts": {
     "lint": "npx eslint . --fix ",
-    "test": "nodemon -e ts --exec ts-node src/index.ts",
+    "test": "nodemon -e ts --exec ts-node test/test.ts",
     "git": "git pull && git add . && git commit -m - && git push"
   },
   "devDependencies": {
