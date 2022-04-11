@@ -1,15 +1,7 @@
 /* eslint-disable no-else-return */
 import * as utils from './utils';
+import type { Prop, PropType, Arr, Obj } from './utils';
 const { isArray } = Array;
-
-export type Obj = Record<string, Prop>;
-export type Arr = Prop[];
-
-export type PropType = Arr | Obj | string | 'bigint' | 'boolean' | 'null' | 'number' | 'string' | 'undefined';
-export interface Prop {
-	types: PropType[];
-	optional?: true;
-}
 
 export function parse(thing: unknown): Prop {
 	if(typeof thing === 'object'){
@@ -30,7 +22,7 @@ export function parse(thing: unknown): Prop {
 	return { types: [typeof thing] };
 }
 
-export function joinObjects(...objs: Obj[]): Obj {
+function joinObjects(...objs: Obj[]): Obj {
 	const keys = utils.joinKeys(...objs);
 	const result: Record<string, Prop> = {};
 
@@ -46,7 +38,7 @@ export function joinObjects(...objs: Obj[]): Obj {
 	return result;
 }
 
-export function joinArrays(...arrs: Arr[]): Arr {
+function joinArrays(...arrs: Arr[]): Arr {
 	// eslint-disable-next-line no-confusing-arrow
 	const maxLength = arrs.reduce<number>((acc, arr) =>
 		acc > arr.length ? acc : arr.length, 0

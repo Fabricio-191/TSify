@@ -33,44 +33,11 @@ export function indent(str: string, indentation = '\t'): string {
 	return str.replace(/^/gm, indentation);
 }
 
-export function linesCount(str: string): number {
-	return str.split('\n').length;
-}
+export type Obj = Record<string, Prop>;
+export type Arr = Prop[];
 
-export function objectSimilarity(a: object, b: object): number {
-	if(deepStrictEqual(a, b)) return 1;
-	let similarity = 0;
-
-	const keysA = Object.keys(a);
-	const keysB = Object.keys(b);
-	if(deepStrictEqual(keysA, keysB)){
-		similarity += 0.5;
-	}
-
-	const keyunknown = 1 / (keysA.length + keysB.length) / 4;
-	for(const key of keysA){
-		if(key in b){
-			if(deepStrictEqual(a[key], b[key])){
-				similarity += keyunknown * 4;
-				continue;
-			}
-
-			const typeA = typeof a[key];
-			const typeB = typeof b[key];
-
-			if(typeA === typeB){
-				if(typeA === 'object'){
-					similarity += keyunknown * 10 * objectSimilarity(a[key], b[key]);
-				}else{
-					similarity += keyunknown * 2;
-				}
-			}else{
-				similarity += keyunknown;
-			}
-		}else{
-			similarity -= keyunknown;
-		}
-	}
-
-	return similarity > 1 ? 1 : similarity;
+export type PropType = Arr | Obj | string | 'bigint' | 'boolean' | 'null' | 'number' | 'string' | 'undefined';
+export interface Prop {
+	types: PropType[];
+	optional?: true;
 }
