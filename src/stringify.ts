@@ -10,6 +10,7 @@ function isObj(thing: unknown): thing is Obj {
 	return typeof thing === 'object' &&
 		!isArray(thing) && thing !== null;
 }
+
 /*
 https://www.npmjs.com/package/nearest-neighbor
 https://www.npmjs.com/package/fuzzy-equal
@@ -121,11 +122,10 @@ function manage(cache: TypeDeclaration[], type: PropType, name: string): string 
 	if(
 		similiarName &&
 		stringSimilarity(similiarName.name, name) > 0.7 &&
-		objectSimilarity(similiarName.type, type) !== 0
+		objectSimilarity(similiarName.type, type) > 0.3
 	){
 		return similiarName.add(type);
 	}
-
 
 	const t = new TypeDeclaration('\xFF' + cache.length.toString() + '\xFF', name);
 	cache.push(t);
@@ -141,11 +141,15 @@ function cacheProp(cache: TypeDeclaration[], prop: Prop, name: string): void {
 				cacheProp(cache, subType, name + '[]');
 			}
 			// manage<Arr>(cache, type, name);
-		}else if(isObj(type) && Object.keys(type).length > 1){
-			for(const key in type){
+		}else if(isObj(type)){
+			const keys = Object.keys(type);
+			for(const key of keys){
 				cacheProp(cache, type[key] as Prop, key);
 			}
-			prop.types[i] = manage(cache, type, name);
+
+			if(keys.length > 1){
+				prop.types[i] = manage(cache, type, name);
+			}
 		}
 	}
 }

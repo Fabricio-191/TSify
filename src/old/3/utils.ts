@@ -55,8 +55,7 @@ export class TypesCache{
 		if(key === null) key = id.slice(2, -2);
 
 		this.cache.push({
-			id,
-			key,
+			id, key,
 			types: [type],
 			uses: 1,
 			declared: false,
