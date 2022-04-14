@@ -3,6 +3,7 @@ import type { Prop, Arr, Obj, PropType } from './utils';
 import { joinArrays, joinObjects } from './parse';
 import * as utils from './utils';
 import * as deepStrictEqual from 'fast-deep-equal/es6';
+import { compareTwoStrings as stringSimilarity } from 'string-similarity';
 const { isArray } = Array;
 
 function isObj(thing: unknown): thing is Obj {
@@ -68,11 +69,13 @@ class TypeDeclaration {
 	public declared?: true;
 	public readonly references: Array<Arr | Obj> = [];
 
-	public add(reference: Arr | Obj): void {
+	public add(reference: Arr | Obj): string {
 		this.references.push(reference);
 		this.type = isArray(this.references[0]) ?
 			joinArrays(...this.references as Arr[]) :
 			joinObjects(...this.references as Obj[]);
+
+		return this.id;
 	}
 
 	public get uses(): number {
@@ -86,7 +89,7 @@ class TypeDeclaration {
 	}
 
 	public isEqual(otherType: Arr | Obj): boolean {
-		return deepStrictEqual(this.type, otherType);
+		return deepStrictEqual(this.type, otherType) || this.references.some(ref => deepStrictEqual(ref, otherType));
 	}
 
 	public similarity(otherType: Arr | Obj): number {
@@ -94,7 +97,7 @@ class TypeDeclaration {
 	}
 
 	public isSimilar(otherType: Arr | Obj): boolean {
-		return this.similarity(otherType) > 0.8;
+		return this.similarity(otherType) > 0.8 || this.references.some(ref => objectSimilarity(ref, otherType) > 0.8);
 	}
 }
 
@@ -102,28 +105,32 @@ function manage(cache: TypeDeclaration[], type: PropType, name: string): string 
 	if(typeof type === 'string') return type;
 
 	const sameType = cache.find(entry => entry.isEqual(type));
-	if(sameType){
-		sameType.add(type);
-		return sameType.id;
-	}
+	if(sameType) return sameType.add(type);
 
 	const sameName = cache.find(entry => entry.realName === name);
-	if(sameName && objectSimilarity(sameName.type, type) > 0.3){
-		sameName.add(type);
-		return sameName.id;
+	if(sameName && objectSimilarity(sameName.type, type) !== 0){
+		return sameName.add(type);
 	}
 
 	const [similarType] = cache.sort((a, b) => a.similarity(type) - b.similarity(type));
 	if(similarType && objectSimilarity(similarType.type, type) > 0.4){
-		similarType.add(type);
-		return similarType.id;
+		return similarType.add(type);
 	}
 
-	const t = new TypeDeclaration('\xFF' + cache.length.toString(), name);
-	cache.push(t);
-	t.add(type);
+	const [similiarName] = cache.sort((a, b) => stringSimilarity(a.name, name) - stringSimilarity(b.name, name));
+	if(
+		similiarName &&
+		stringSimilarity(similiarName.name, name) > 0.7 &&
+		objectSimilarity(similiarName.type, type) !== 0
+	){
+		return similiarName.add(type);
+	}
 
-	return t.id;
+
+	const t = new TypeDeclaration('\xFF' + cache.length.toString() + '\xFF', name);
+	cache.push(t);
+
+	return t.add(type);
 }
 
 function cacheProp(cache: TypeDeclaration[], prop: Prop, name: string): void {
@@ -134,7 +141,7 @@ function cacheProp(cache: TypeDeclaration[], prop: Prop, name: string): void {
 				cacheProp(cache, subType, name + '[]');
 			}
 			// manage<Arr>(cache, type, name);
-		}else if(isObj(type)){
+		}else if(isObj(type) && Object.keys(type).length > 1){
 			for(const key in type){
 				cacheProp(cache, type[key] as Prop, key);
 			}
@@ -197,7 +204,9 @@ export default function stringify(parsed: Prop): string {
 	const cache: TypeDeclaration[] = [];
 	cacheProp(cache, parsed, '');
 
-	const declarations = [];
+	const declarations: string[] = [
+		'/* eslint-disable @typescript-eslint/ban-types */\n',
+	];
 	for(const entry of cache){
 		if(entry.uses < 2) continue;
 
@@ -208,6 +217,8 @@ export default function stringify(parsed: Prop): string {
 	const string = stringifyProp(cache, parsed);
 
 	let finalString = `${declarations.join('\n')}\ntype FinalData = ${string}\n\nexport default FinalData;\n`;
+
+	utils.logAll(cache.filter(x => x.name === 'thumbnailOverlays'));
 
 	while(finalString.includes('\xFF')){
 		for(const entry of cache){
@@ -221,76 +232,3 @@ export default function stringify(parsed: Prop): string {
 
 	return finalString;
 }
-
-
-/*
-
-type cacheFn = (cache: CacheEntry[], type: Prop, key: string) => string;
-
-const manage: cacheFn = (type, key) => {
-	if(typeof type === 'string') return type;
-
-	const sameType = cache.find(x => deepStrictEqual(x, type));
-	const sameKey = cache.find(x => x.key === key);
-
-	if(sameType === sameKey && sameType){
-		sameType.uses++;
-		return sameType.key;
-	}else if(sameType && compareTwoStrings(sameType.key, key) > 0.5){
-		sameType.uses++;
-		return sameType.key;
-	}else if(sameKey){
-		if(
-			isArray(sameKey) === isArray(type) &&
-			Object.keys(sameKey.type).some(k => k in type)
-		){
-			if(isArray(type)){
-				sameKey.type = joinArrays(sameKey.type as Arr, type);
-			}else{
-				sameKey.type = joinObjects(sameKey.type as Obj, type);
-			}
-		}else{}
-
-
-		sameKey.uses++;
-		return sameKey.key;
-	}
-
-	const similarType = cache.find(x =>
-		isArray(x.type) === isArray(type) &&
-		utils.objectSimilarity(x.type, type) > 0.7
-	);
-	const similarKey = cache.find(x => key.length > 5 && compareTwoStrings(x.key, key) > 0.8);
-
-	if(similarType === similarKey){
-
-	}else if(similarType){
-
-	}else if(similarKey){
-
-	}
-
-	if(sameKey && isArray(sameKey) === isArray(type)){
-		if(isArray(type)){
-			sameKey.type = joinArrays(sameKey.type as Arr, type);
-		}else{
-			sameKey.type = joinObjects(sameKey.type as Obj, type);
-		}
-
-
-		sameKey.uses++;
-		return sameKey.key;
-	}
-
-	const entry: CacheEntry = {
-		key,
-		type,
-		uses: 0,
-		declared: false,
-	};
-
-	cache.push(entry);
-	return entry.key;
-};
-
-*/
