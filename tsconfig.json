@@ -39,6 +39,6 @@
 		"suppressImplicitAnyIndexErrors": true,
 		"experimentalDecorators": true
 	},
-	"include": ["src", "test/raw.d.ts", "test"],
+	"include": ["src", "src/old/raw.d.ts", "test"],
 	"exclude": ["lib"],
 }

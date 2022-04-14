@@ -3,6 +3,7 @@
 import TSify, { toFile } from '../src';
 
 console.log(TSify(
+	123,
 	{
 		serviceTrackingParams: [
 			{

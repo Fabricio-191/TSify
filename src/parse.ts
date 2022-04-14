@@ -22,7 +22,7 @@ export function parse(thing: unknown): Prop {
 	return { types: [typeof thing] };
 }
 
-function joinObjects(...objs: Obj[]): Obj {
+export function joinObjects(...objs: Obj[]): Obj {
 	const keys = utils.joinKeys(...objs);
 	const result: Record<string, Prop> = {};
 
@@ -38,7 +38,7 @@ function joinObjects(...objs: Obj[]): Obj {
 	return result;
 }
 
-function joinArrays(...arrs: Arr[]): Arr {
+export function joinArrays(...arrs: Arr[]): Arr {
 	// eslint-disable-next-line no-confusing-arrow
 	const maxLength = arrs.reduce<number>((acc, arr) =>
 		acc > arr.length ? acc : arr.length, 0
