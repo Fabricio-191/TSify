@@ -763,64 +763,6 @@ interface adaptiveFormats {
 	loudnessDb?: number;
 }
 
-interface playlist {
-	title?: string;
-	contents?: Array<{
-		messageRenderer: {
-			trackingParams: string;
-			subtext: {
-				messageSubtextRenderer: {
-					text: {
-						simpleText: string;
-					};
-				};
-			};
-		};
-	} | {
-		playlistPanelVideoRenderer: playlistPanelVideoRenderer;
-	}>;
-	currentIndex?: number;
-	playlistId?: string;
-	totalVideos?: number;
-	ownerName?: {
-		simpleText: string;
-	};
-	isInfinite?: boolean;
-	playlistShareUrl?: string;
-	shortBylineText?: {
-		runs: runs[];
-	};
-	longBylineText?: {
-		runs: runs[];
-	};
-	totalVideosText?: {
-		runs: {
-			text: string;
-		}[];
-	};
-	trackingParams?: string;
-	titleText?: {
-		runs: runs[];
-	};
-	endpoint?: navigationEndpoint;
-	localCurrentIndex?: number;
-	playlistButtons?: {
-		menuRenderer: menuRenderer;
-	};
-	saveButton?: {
-		toggleButtonRenderer: toggleButtonRenderer;
-	};
-	videoCountText?: {
-		runs: {
-			text: string;
-		}[];
-	};
-	isCourse?: boolean;
-	initialData?: initialData;
-	ytcfg?: ytcfg;
-	continuations?: [];
-}
-
 interface WEB_PLAYER_CONTEXT_CONFIG_ID_KEVLAR_SPONSORSHIPS_OFFER {
 	rootElementId: string;
 	jsUrl: string;
@@ -1023,7 +965,7 @@ interface compactVideoRenderer {
 		simpleText: string;
 	};
 	lengthText: defaultText;
-	navigationEndpoint: navigationEndpoints;
+	navigationEndpoint: navigationEndpoint;
 	shortBylineText: {
 		runs: runs[];
 	};
@@ -1142,6 +1084,43 @@ interface voiceSearchDialogRenderer {
 	};
 }
 
+interface client {
+	hl: string;
+	gl: string;
+	remoteHost: string;
+	deviceMake: string;
+	deviceModel: string;
+	visitorData: string;
+	userAgent: string;
+	clientName: string;
+	clientVersion: string;
+	osName: string;
+	osVersion: string;
+	originalUrl: string;
+	platform: string;
+	clientFormFactor: string;
+	configInfo: {
+		appInstallData: string;
+	};
+}
+
+interface SBOX_SETTINGS {
+	HAS_ON_SCREEN_KEYBOARD: boolean;
+	IS_FUSION: boolean;
+	IS_POLYMER: boolean;
+	REQUEST_DOMAIN: string;
+	REQUEST_LANGUAGE: string;
+	SEND_VISITOR_DATA: boolean;
+	SEARCHBOX_BEHAVIOR_EXPERIMENT: string;
+	SEARCHBOX_ENABLE_REFINEMENT_SUGGEST: boolean;
+	SEARCHBOX_TAP_TARGET_EXPERIMENT: number;
+	SEARCHBOX_ZERO_TYPING_SUGGEST_USE_REGULAR_SUGGEST: string;
+	VISITOR_DATA: string;
+	SEARCHBOX_HOST_OVERRIDE: string;
+	HIDE_REMOVE_LINK: boolean;
+	SUGG_EXP_ID?: string;
+}
+
 interface initialData {
 	responseContext: responseContext;
 	contents: {
@@ -1217,7 +1196,20 @@ interface initialData {
 								trackingParams: string;
 								defaultExpanded: boolean;
 								descriptionCollapsedLines: number;
-								showMoreCommand: showMoreCommand;
+								showMoreCommand: {
+									clickTrackingParams: string;
+									commandExecutorCommand: {
+										commands: [
+											commands,
+											{
+												clickTrackingParams: string;
+												scrollToEngagementPanelCommand: {
+													targetId: string;
+												};
+											}
+										];
+									};
+								};
 								showLessCommand: commands;
 							};
 						},
@@ -1297,7 +1289,60 @@ interface initialData {
 				};
 			};
 			playlist: {
-				playlist: playlist;
+				playlist: {
+					title: string;
+					contents: Array<{
+						messageRenderer: {
+							trackingParams: string;
+							subtext: {
+								messageSubtextRenderer: {
+									text: {
+										simpleText: string;
+									};
+								};
+							};
+						};
+					} | {
+						playlistPanelVideoRenderer: playlistPanelVideoRenderer;
+					}>;
+					currentIndex: number;
+					playlistId: string;
+					totalVideos: number;
+					ownerName: {
+						simpleText: string;
+					};
+					isInfinite: boolean;
+					playlistShareUrl: string;
+					shortBylineText: {
+						runs: runs[];
+					};
+					longBylineText: {
+						runs: runs[];
+					};
+					totalVideosText: {
+						runs: {
+							text: string;
+						}[];
+					};
+					trackingParams: string;
+					titleText: {
+						runs: runs[];
+					};
+					endpoint: navigationEndpoint;
+					localCurrentIndex: number;
+					playlistButtons: {
+						menuRenderer: menuRenderer;
+					};
+					saveButton: {
+						toggleButtonRenderer: toggleButtonRenderer;
+					};
+					videoCountText: {
+						runs: {
+							text: string;
+						}[];
+					};
+					isCourse: boolean;
+				};
 			};
 			autoplay: {
 				autoplay: {
@@ -1317,11 +1362,6 @@ interface initialData {
 					trackingParams: string;
 				};
 			}[];
-		};
-		twoColumnSearchResultsRenderer?: {
-			primaryContents: {
-				sectionListRenderer: sectionListRenderer;
-			};
 		};
 	};
 	currentVideoEndpoint?: navigationEndpoints;
@@ -1532,44 +1572,6 @@ interface initialData {
 			trackingParams: string;
 		};
 	};
-	estimatedResults?: string;
-}
-
-interface client {
-	hl: string;
-	gl: string;
-	remoteHost: string;
-	deviceMake: string;
-	deviceModel: string;
-	visitorData: string;
-	userAgent: string;
-	clientName: string;
-	clientVersion: string;
-	osName: string;
-	osVersion: string;
-	originalUrl: string;
-	platform: string;
-	clientFormFactor: string;
-	configInfo: {
-		appInstallData: string;
-	};
-}
-
-interface SBOX_SETTINGS {
-	HAS_ON_SCREEN_KEYBOARD: boolean;
-	IS_FUSION: boolean;
-	IS_POLYMER: boolean;
-	REQUEST_DOMAIN: string;
-	REQUEST_LANGUAGE: string;
-	SEND_VISITOR_DATA: boolean;
-	SEARCHBOX_BEHAVIOR_EXPERIMENT: string;
-	SEARCHBOX_ENABLE_REFINEMENT_SUGGEST: boolean;
-	SEARCHBOX_TAP_TARGET_EXPERIMENT: number;
-	SEARCHBOX_ZERO_TYPING_SUGGEST_USE_REGULAR_SUGGEST: string;
-	VISITOR_DATA: string;
-	SEARCHBOX_HOST_OVERRIDE: string;
-	HIDE_REMOVE_LINK: boolean;
-	SUGG_EXP_ID?: string;
 }
 
 interface playlistRenderer {
@@ -1635,8 +1637,8 @@ interface playlistRenderer {
 }
 
 interface buttonRenderer {
-	style?: string;
-	size?: string;
+	style: string;
+	size: string;
 	isDisabled?: boolean;
 	text?: {
 		simpleText?: string;
@@ -1659,7 +1661,7 @@ interface buttonRenderer {
 	accessibility?: {
 		label: string;
 	};
-	command?: command | continuationEndpoint | navigationEndpoint | serviceEndpoint | showMoreCommand;
+	command?: command | continuationEndpoint | navigationEndpoint | serviceEndpoint;
 	targetId?: string;
 }
 
@@ -1735,32 +1737,6 @@ interface playlistVideoRenderer {
 	];
 }
 
-interface watchEndpoint {
-	videoId: string;
-	playlistId?: string;
-	index?: number;
-	params?: string;
-	playerParams?: string;
-	loggingContext?: {
-		vssLoggingContext: {
-			serializedContextData: string;
-		};
-	};
-	watchEndpointSupportedPrefetchConfig?: {
-		prefetchHintConfig: prefetchHintConfig;
-	};
-	watchEndpointSupportedOnesieConfig?: {
-		html5PlaybackOnesieConfig: {
-			commonConfig: {
-				url: string;
-			};
-		};
-	};
-	nofollow?: boolean;
-	continuePlayback?: boolean;
-	startTimeSeconds?: number;
-}
-
 interface endScreenVideoRenderer {
 	videoId: string;
 	thumbnail: {
@@ -1772,7 +1748,7 @@ interface endScreenVideoRenderer {
 	};
 	lengthText: defaultText;
 	lengthInSeconds: number;
-	navigationEndpoint: navigationEndpoints;
+	navigationEndpoint: navigationEndpoint;
 	trackingParams: string;
 	shortViewCountText: defaultText;
 	publishedTimeText: {
@@ -1842,10 +1818,10 @@ interface desktopTopbarRenderer {
 		hotkeyDialogRenderer: hotkeyDialogRenderer;
 	};
 	backButton: {
-		buttonRenderer: buttonRenderer;
+		buttonRenderer: buttonRenderer102;
 	};
 	forwardButton: {
-		buttonRenderer: buttonRenderer;
+		buttonRenderer: buttonRenderer102;
 	};
 	a11ySkipNavigationButton: {
 		buttonRenderer: buttonRenderer;
@@ -1853,6 +1829,30 @@ interface desktopTopbarRenderer {
 	voiceSearchButton: {
 		buttonRenderer: buttonRenderer;
 	};
+}
+
+interface watchEndpoint {
+	videoId: string;
+	playlistId?: string;
+	index?: number;
+	params?: string;
+	playerParams?: string;
+	loggingContext?: {
+		vssLoggingContext: {
+			serializedContextData: string;
+		};
+	};
+	watchEndpointSupportedPrefetchConfig?: {
+		prefetchHintConfig: prefetchHintConfig;
+	};
+	watchEndpointSupportedOnesieConfig?: {
+		html5PlaybackOnesieConfig: {
+			commonConfig: {
+				url: string;
+			};
+		};
+	};
+	continuePlayback?: boolean;
 }
 
 interface topbarMenuButtonRenderer {
@@ -1884,21 +1884,35 @@ interface WEB_PLAYER_CONTEXT_CONFIGS {
 	WEB_PLAYER_CONTEXT_CONFIG_ID_KEVLAR_INLINE_PREVIEW: WEB_PLAYER_CONTEXT_CONFIG_ID_KEVLAR_INLINE_PREVIEW;
 }
 
-interface commands {
-	clickTrackingParams?: string;
-	openPopupAction?: openPopupAction;
-	changeEngagementPanelVisibilityAction?: changeEngagementPanelVisibilityAction;
-	scrollToEngagementPanelCommand?: {
-		targetId: string;
+interface navigationEndpoint {
+	clickTrackingParams: string;
+	commandMetadata: {
+		webCommandMetadata: webCommandMetadata | {
+			ignoreNavigation: boolean;
+		};
 	};
-	updateToggleButtonStateCommand?: {
-		toggled: boolean;
-		buttonId: string;
+	signInEndpoint?: signInEndpoint | {
+		hack?: boolean;
+		idamTag?: string;
+		nextEndpoint?: navigationEndpoint;
 	};
-	commandMetadata?: {
-		webCommandMetadata: webCommandMetadata;
+	modalEndpoint?: {
+		modal: {
+			modalWithTitleAndButtonRenderer: modalWithTitleAndButtonRenderer;
+		};
 	};
-	feedbackEndpoint?: feedbackEndpoint;
+	browseEndpoint?: browseEndpoint | {
+		browseId: string;
+		params: string;
+		nofollow: boolean;
+		navigationType: string;
+	} | {
+		browseId: string;
+	};
+	urlEndpoint?: urlEndpoint | {
+		url: string;
+	};
+	watchEndpoint?: watchEndpoint43 | watchEndpoint72;
 }
 
 interface engagementPanelSectionListRenderer {
@@ -1934,7 +1948,18 @@ interface engagementPanelSectionListRenderer {
 				simpleText: string;
 			};
 			visibilityButton: {
-				buttonRenderer: buttonRenderer;
+				buttonRenderer: {
+					icon: {
+						iconType: string;
+					};
+					trackingParams: string;
+					accessibilityData: {
+						accessibilityData: {
+							label: string;
+						};
+					};
+					command: command;
+				};
 			};
 			trackingParams: string;
 		};
@@ -1969,17 +1994,6 @@ interface LIVE_CHAT_BASE_TANGO_CONFIG {
 	useNewTango: boolean;
 }
 
-interface actions {
-	clickTrackingParams?: string;
-	addToPlaylistCommand?: addToPlaylistCommand;
-	addedVideoId?: string;
-	action?: string;
-	removedVideoId?: string;
-	signalAction?: {
-		signal: string;
-	};
-}
-
 interface addToPlaylistCommand {
 	openMiniplayer: boolean;
 	openListPanel?: boolean;
@@ -1987,31 +2001,6 @@ interface addToPlaylistCommand {
 	listType: string;
 	onCreateListCommand: onCreateListCommand;
 	videoIds: string[];
-}
-
-interface navigationEndpoint {
-	clickTrackingParams: string;
-	commandMetadata: {
-		webCommandMetadata: webCommandMetadata | {
-			ignoreNavigation: boolean;
-		};
-	};
-	signInEndpoint?: signInEndpoint | {
-		hack?: boolean;
-		idamTag?: string;
-		nextEndpoint?: navigationEndpoint;
-	};
-	modalEndpoint?: {
-		modal: {
-			modalWithTitleAndButtonRenderer: modalWithTitleAndButtonRenderer;
-		};
-	};
-	browseEndpoint?: browseEndpoint | {
-		browseId: string;
-	};
-	urlEndpoint?: urlEndpoint | {
-		url: string;
-	};
 }
 
 interface metadataBadgeRenderer {
@@ -2071,35 +2060,57 @@ interface detailedMetadataSnippets {
 	};
 	maxOneLine: boolean;
 	snippetTimestamp?: defaultText;
-	timestampEndpoint?: navigationEndpoints;
-}
-
-interface webCommandMetadata {
-	url?: string;
-	webPageType?: string;
-	rootVe?: number;
-	sendPost?: boolean;
-	apiUrl?: string;
-}
-
-interface browseEndpoint {
-	browseId: string;
-	canonicalBaseUrl?: string;
-	params?: string;
-	nofollow?: boolean;
-	navigationType?: string;
-}
-
-interface searchEndpoint {
-	clickTrackingParams?: string;
-	commandMetadata?: {
-		webCommandMetadata: webCommandMetadata;
+	timestampEndpoint?: {
+		clickTrackingParams: string;
+		commandMetadata: {
+			webCommandMetadata: webCommandMetadata;
+		};
+		watchEndpoint: {
+			videoId: string;
+			startTimeSeconds: number;
+			watchEndpointSupportedOnesieConfig: {
+				html5PlaybackOnesieConfig: {
+					commonConfig: {
+						url: string;
+					};
+				};
+			};
+		};
 	};
-	searchEndpoint?: searchEndpoint | {
-		query: string;
+}
+
+interface menuRenderer {
+	items?: [
+		{
+			menuNavigationItemRenderer?: menuNavigationItemRenderer;
+			menuServiceItemRenderer?: menuServiceItemRenderer;
+		},
+		{
+			menuNavigationItemRenderer: menuNavigationItemRenderer;
+		}?
+	];
+	trackingParams: string;
+	topLevelButtons?: [
+		{
+			toggleButtonRenderer: toggleButtonRenderer;
+		},
+		{
+			toggleButtonRenderer?: toggleButtonRenderer;
+			buttonRenderer?: buttonRenderer;
+		},
+		{
+			buttonRenderer: buttonRenderer;
+		}?,
+		{
+			buttonRenderer: buttonRenderer;
+		}?
+	];
+	accessibility?: {
+		accessibilityData: {
+			label: string;
+		};
 	};
-	query?: string;
-	params?: string;
+	targetId?: string;
 }
 
 interface sectionListRenderer {
@@ -2156,40 +2167,6 @@ interface searchFilterRenderer {
 	status?: string;
 }
 
-interface menuRenderer {
-	items?: [
-		{
-			menuNavigationItemRenderer?: menuNavigationItemRenderer;
-			menuServiceItemRenderer?: menuServiceItemRenderer;
-		},
-		{
-			menuNavigationItemRenderer: menuNavigationItemRenderer;
-		}?
-	];
-	trackingParams: string;
-	topLevelButtons?: [
-		{
-			toggleButtonRenderer: toggleButtonRenderer;
-		},
-		{
-			toggleButtonRenderer?: toggleButtonRenderer;
-			buttonRenderer?: buttonRenderer;
-		},
-		{
-			buttonRenderer: buttonRenderer;
-		}?,
-		{
-			buttonRenderer: buttonRenderer;
-		}?
-	];
-	accessibility?: {
-		accessibilityData: {
-			label: string;
-		};
-	};
-	targetId?: string;
-}
-
 interface INNERTUBE_CONTEXT {
 	client: client;
 	user: {
@@ -2217,29 +2194,11 @@ interface mutations {
 	};
 }
 
-interface sets {
-	mode: string;
-	autoplayVideo: navigationEndpoints;
-	nextButtonVideo: navigationEndpoints;
-	previousButtonVideo?: navigationEndpoints;
-}
-
-interface serviceEndpoint {
-	clickTrackingParams: string;
-	commandMetadata: {
-		webCommandMetadata: webCommandMetadata | {
-			sendPost: boolean;
-		};
-	};
-	shareEntityServiceEndpoint?: shareEntityServiceEndpoint;
-	signalServiceEndpoint?: signalServiceEndpoint;
-}
-
-interface webSearchboxConfig {
-	requestLanguage: string;
-	requestDomain: string;
-	hasOnscreenKeyboard: boolean;
-	focusSearchbox: boolean;
+interface webCommandMetadata {
+	url: string;
+	webPageType: string;
+	rootVe: number;
+	apiUrl?: string;
 }
 
 interface hotkeyDialogRenderer {
@@ -2459,7 +2418,20 @@ interface menuNavigationItemRenderer {
 	icon: {
 		iconType: string;
 	};
-	navigationEndpoint: commands | navigationEndpoint;
+	navigationEndpoint: navigationEndpoint | {
+		clickTrackingParams: string;
+		openPopupAction: {
+			popup: {
+				aboutThisAdRenderer: {
+					url: {
+						privateDoNotAccessOrElseTrustedResourceUrlWrappedValue: string;
+					};
+					trackingParams: string;
+				};
+			};
+			popupType: string;
+		};
+	};
 	trackingParams: string;
 }
 
@@ -2476,6 +2448,15 @@ interface menuServiceItemRenderer {
 	trackingParams: string;
 }
 
+interface multiPageMenuRenderer {
+	sections?: {
+		multiPageMenuSectionRenderer: multiPageMenuSectionRenderer;
+	}[];
+	trackingParams: string;
+	style: string;
+	showLoadingSpinner?: boolean;
+}
+
 interface childVideoRenderer {
 	title: {
 		simpleText: string;
@@ -2485,13 +2466,22 @@ interface childVideoRenderer {
 	videoId: string;
 }
 
-interface multiPageMenuRenderer {
-	sections?: {
-		multiPageMenuSectionRenderer: multiPageMenuSectionRenderer;
-	}[];
-	trackingParams: string;
-	style: string;
-	showLoadingSpinner?: boolean;
+interface serviceEndpoint {
+	clickTrackingParams: string;
+	commandMetadata: {
+		webCommandMetadata: webCommandMetadata17 | {
+			sendPost: boolean;
+		};
+	};
+	shareEntityServiceEndpoint?: shareEntityServiceEndpoint;
+	signalServiceEndpoint?: signalServiceEndpoint;
+}
+
+interface sets {
+	mode: string;
+	autoplayVideo: navigationEndpoints;
+	nextButtonVideo: navigationEndpoints;
+	previousButtonVideo?: navigationEndpoints;
 }
 
 interface searchRefinementCardRenderer {
@@ -2505,6 +2495,13 @@ interface searchRefinementCardRenderer {
 	};
 	searchEndpoint: searchEndpoint;
 	trackingParams: string;
+}
+
+interface webSearchboxConfig {
+	requestLanguage: string;
+	requestDomain: string;
+	hasOnscreenKeyboard: boolean;
+	focusSearchbox: boolean;
 }
 
 interface GOOGLE_FEEDBACK_PRODUCT_DATA {
@@ -2523,6 +2520,14 @@ interface colorInfo {
 	primaries: string;
 	transferCharacteristics: string;
 	matrixCoefficients: string;
+}
+
+interface actions {
+	clickTrackingParams: string;
+	addToPlaylistCommand?: addToPlaylistCommand;
+	signalAction?: {
+		signal: string;
+	};
 }
 
 interface runs {
@@ -2556,13 +2561,6 @@ interface openPopupAction {
 		unifiedSharePanelRenderer?: unifiedSharePanelRenderer;
 		notificationActionRenderer?: notificationActionRenderer;
 		multiPageMenuRenderer?: multiPageMenuRenderer;
-		voiceSearchDialogRenderer?: voiceSearchDialogRenderer;
-		aboutThisAdRenderer?: {
-			url: {
-				privateDoNotAccessOrElseTrustedResourceUrlWrappedValue: string;
-			};
-			trackingParams: string;
-		};
 	};
 	popupType: string;
 	beReused?: boolean;
@@ -2588,24 +2586,24 @@ interface urlEndpoint {
 	nofollow?: boolean;
 }
 
+interface commands {
+	clickTrackingParams: string;
+	openPopupAction?: openPopupAction;
+	changeEngagementPanelVisibilityAction?: changeEngagementPanelVisibilityAction;
+}
+
 interface untoggledServiceEndpoint {
 	clickTrackingParams: string;
 	commandMetadata: {
-		webCommandMetadata: webCommandMetadata;
+		webCommandMetadata: webCommandMetadata17;
 	};
 	playlistEditEndpoint: playlistEditEndpoint;
-}
-
-interface watchPlaylistEndpoint {
-	playlistId: string;
-	index: number;
-	params: string;
 }
 
 interface continuationEndpoint {
 	clickTrackingParams: string;
 	commandMetadata: {
-		webCommandMetadata: webCommandMetadata;
+		webCommandMetadata: webCommandMetadata17;
 	};
 	continuationCommand: continuationCommand;
 }
@@ -2613,41 +2611,15 @@ interface continuationEndpoint {
 interface impressionEndpoints {
 	clickTrackingParams: string;
 	commandMetadata: {
-		webCommandMetadata: webCommandMetadata;
+		webCommandMetadata: webCommandMetadata17;
 	};
 	feedbackEndpoint: feedbackEndpoint;
-}
-
-interface responseContext {
-	serviceTrackingParams: serviceTrackingParams[];
-	mainAppWebResponseContext: {
-		loggedOut: boolean;
-	};
-	webResponseContextExtensionData: webResponseContextExtensionData | {
-		hasDecorated: boolean;
-	};
-}
-
-interface webResponseContextExtensionData {
-	ytConfigData: ytConfigData;
-	webPrefetchData?: {
-		navigationEndpoints: navigationEndpoints[];
-	};
-	hasDecorated: boolean;
-}
-
-interface onCreateListCommand {
-	clickTrackingParams: string;
-	commandMetadata: {
-		webCommandMetadata: webCommandMetadata;
-	};
-	createPlaylistServiceEndpoint: createPlaylistServiceEndpoint;
 }
 
 interface menuRequest {
 	clickTrackingParams: string;
 	commandMetadata: {
-		webCommandMetadata: webCommandMetadata;
+		webCommandMetadata: webCommandMetadata17;
 	};
 	signalServiceEndpoint: signalServiceEndpoint;
 }
@@ -2684,6 +2656,14 @@ interface modalWithTitleAndButtonRenderer {
 	};
 }
 
+interface continuationItemRenderer {
+	trigger: string;
+	continuationEndpoint: continuationEndpoint;
+	button?: {
+		buttonRenderer: buttonRenderer;
+	};
+}
+
 interface channelThumbnailWithLinkRenderer {
 	thumbnail: {
 		thumbnails: thumbnails[];
@@ -2696,11 +2676,47 @@ interface channelThumbnailWithLinkRenderer {
 	};
 }
 
-interface continuationItemRenderer {
-	trigger: string;
-	continuationEndpoint: continuationEndpoint;
-	button?: {
-		buttonRenderer: buttonRenderer;
+interface webResponseContextExtensionData {
+	ytConfigData: ytConfigData;
+	webPrefetchData?: {
+		navigationEndpoints: navigationEndpoints[];
+	};
+	hasDecorated: boolean;
+}
+
+interface watchPlaylistEndpoint {
+	playlistId: string;
+	index: number;
+	params: string;
+}
+
+interface onCreateListCommand {
+	clickTrackingParams: string;
+	commandMetadata: {
+		webCommandMetadata: webCommandMetadata17;
+	};
+	createPlaylistServiceEndpoint: createPlaylistServiceEndpoint;
+}
+
+interface watchEndpoint43 {
+	videoId: string;
+	nofollow: boolean;
+	watchEndpointSupportedOnesieConfig: {
+		html5PlaybackOnesieConfig: {
+			commonConfig: {
+				url: string;
+			};
+		};
+	};
+}
+
+interface responseContext {
+	serviceTrackingParams: serviceTrackingParams[];
+	mainAppWebResponseContext: {
+		loggedOut: boolean;
+	};
+	webResponseContextExtensionData: webResponseContextExtensionData | {
+		hasDecorated: boolean;
 	};
 }
 
@@ -2712,6 +2728,16 @@ interface searchFilterGroupRenderer {
 		searchFilterRenderer: searchFilterRenderer;
 	}[];
 	trackingParams: string;
+}
+
+interface searchEndpoint {
+	clickTrackingParams: string;
+	commandMetadata: {
+		webCommandMetadata: webCommandMetadata;
+	};
+	searchEndpoint: searchEndpoint189 | {
+		query: string;
+	};
 }
 
 interface SBOX_LABELS {
@@ -2733,6 +2759,21 @@ interface title {
 			label: string;
 		};
 	};
+}
+
+interface actions105 {
+	clickTrackingParams: string;
+	openPopupAction: openPopupAction104;
+}
+
+interface actions52 {
+	addedVideoId: string;
+	action: string;
+}
+
+interface actions55 {
+	action: string;
+	removedVideoId: string;
 }
 
 interface initRange {
@@ -2757,7 +2798,14 @@ interface thumbnail {
 
 interface playlistEditEndpoint {
 	playlistId: string;
-	actions: actions[];
+	actions: actions52 | actions55[];
+}
+
+interface openPopupAction104 {
+	popup: {
+		voiceSearchDialogRenderer: voiceSearchDialogRenderer;
+	};
+	popupType: string;
 }
 
 interface loggingDirectives {
@@ -2783,32 +2831,38 @@ interface defaultText {
 	simpleText: string;
 }
 
-interface changeEngagementPanelVisibilityAction {
-	targetId: string;
-	visibility: string;
-}
-
 interface command {
 	clickTrackingParams: string;
 	commandExecutorCommand: {
 		commands: [
-			impressionEndpoints | navigationEndpoint,
-			commands?
+			commands | impressionEndpoints | navigationEndpoint,
+			({
+				clickTrackingParams: string;
+				updateToggleButtonStateCommand: {
+					toggled: boolean;
+					buttonId: string;
+				};
+			} | {
+				commandMetadata: {
+					webCommandMetadata: webCommandMetadata17;
+				};
+				feedbackEndpoint: feedbackEndpoint;
+			})?
 		];
 	};
-}
-
-interface params {
-	key: string;
-	value: string;
 }
 
 interface signalServiceEndpoint {
 	signal: string;
 	actions: [
-		actions | commands,
+		actions | actions105 | commands,
 		commands?
 	];
+}
+
+interface webCommandMetadata17 {
+	sendPost: boolean;
+	apiUrl: string;
 }
 
 interface continuationCommand {
@@ -2816,46 +2870,9 @@ interface continuationCommand {
 	request: string;
 }
 
-interface prefetchHintConfig {
-	prefetchPriority: number;
-	playbackRelativeSecondsPrefetchCondition: number;
-}
-
 interface subscribeEndpoint {
 	channelIds: string[];
 	params: string;
-}
-
-interface entityBatchUpdate {
-	mutations: mutations[];
-	timestamp: timestamp;
-}
-
-interface showMoreCommand {
-	clickTrackingParams: string;
-	commandExecutorCommand: {
-		commands: commands[];
-	};
-}
-
-interface scheduler {
-	useRaf: boolean;
-	timeout: number;
-}
-
-interface serviceTrackingParams {
-	service: string;
-	params: params[];
-}
-
-interface createPlaylistServiceEndpoint {
-	videoIds: string[];
-	params: string;
-}
-
-interface shareEntityServiceEndpoint {
-	serializedShareEntity: string;
-	commands: commands[];
 }
 
 interface thumbnailOverlayTimeStatusRenderer {
@@ -2904,6 +2921,33 @@ interface notificationActionRenderer {
 	trackingParams: string;
 }
 
+interface buttonRenderer102 {
+	trackingParams: string;
+	command: serviceEndpoint;
+}
+
+interface multiPageMenuSectionRenderer {
+	items: {
+		compactLinkRenderer: compactLinkRenderer;
+	}[];
+	trackingParams: string;
+}
+
+interface changeEngagementPanelVisibilityAction {
+	targetId: string;
+	visibility: string;
+}
+
+interface createPlaylistServiceEndpoint {
+	videoIds: string[];
+	params: string;
+}
+
+interface shareEntityServiceEndpoint {
+	serializedShareEntity: string;
+	commands: commands[];
+}
+
 interface metadataRowHeaderRenderer {
 	content: {
 		runs: {
@@ -2918,11 +2962,50 @@ interface unifiedSharePanelRenderer {
 	showLoadingSpinner: boolean;
 }
 
-interface multiPageMenuSectionRenderer {
-	items: {
-		compactLinkRenderer: compactLinkRenderer;
-	}[];
-	trackingParams: string;
+interface prefetchHintConfig {
+	prefetchPriority: number;
+	playbackRelativeSecondsPrefetchCondition: number;
+}
+
+interface entityBatchUpdate {
+	mutations: mutations[];
+	timestamp: timestamp;
+}
+
+interface watchEndpoint72 {
+	videoId: string;
+	watchEndpointSupportedOnesieConfig: {
+		html5PlaybackOnesieConfig: {
+			commonConfig: {
+				url: string;
+			};
+		};
+	};
+}
+
+interface browseEndpoint {
+	browseId: string;
+	canonicalBaseUrl: string;
+}
+
+interface scheduler {
+	useRaf: boolean;
+	timeout: number;
+}
+
+interface serviceTrackingParams {
+	service: string;
+	params: params[];
+}
+
+interface params {
+	key: string;
+	value: string;
+}
+
+interface searchEndpoint189 {
+	query: string;
+	params: string;
 }
 
 interface FinalData {
@@ -3032,7 +3115,7 @@ interface FinalData {
 						getSharePanelCommand: {
 							clickTrackingParams: string;
 							commandMetadata: {
-								webCommandMetadata: webCommandMetadata;
+								webCommandMetadata: webCommandMetadata17;
 							};
 							webPlayerShareEntityServiceEndpoint: {
 								serializedShareEntity: string;
@@ -3041,14 +3124,14 @@ interface FinalData {
 						subscribeCommand: {
 							clickTrackingParams: string;
 							commandMetadata: {
-								webCommandMetadata: webCommandMetadata;
+								webCommandMetadata: webCommandMetadata17;
 							};
 							subscribeEndpoint: subscribeEndpoint;
 						};
 						unsubscribeCommand: {
 							clickTrackingParams: string;
 							commandMetadata: {
-								webCommandMetadata: webCommandMetadata;
+								webCommandMetadata: webCommandMetadata17;
 							};
 							unsubscribeEndpoint: subscribeEndpoint;
 						};
@@ -3157,8 +3240,30 @@ interface FinalData {
 			};
 		};
 	};
-	playlist: playlist;
-	search: playlist;
+	playlist: {
+		initialData: initialData;
+		ytcfg: ytcfg;
+		continuations: [];
+	};
+	search: {
+		initialData: {
+			responseContext: responseContext;
+			estimatedResults: string;
+			contents: {
+				twoColumnSearchResultsRenderer: {
+					primaryContents: {
+						sectionListRenderer: sectionListRenderer;
+					};
+				};
+			};
+			trackingParams: string;
+			topbar: {
+				desktopTopbarRenderer: desktopTopbarRenderer;
+			};
+		};
+		ytcfg: ytcfg;
+		continuations: [];
+	};
 }
 
 export default FinalData;

@@ -84,8 +84,8 @@ class TypeDeclaration {
 	}
 
 	public get name(): string {
-		if(this.realName.endsWith('[]')){
-			return this.realName.slice(0, -2);
+		if(this.realName.includes('[]')){
+			return this.realName.replace('[]', '');
 		}else return this.realName;
 	}
 
@@ -109,8 +109,15 @@ function manage(cache: TypeDeclaration[], type: PropType, name: string): string 
 	if(sameType) return sameType.add(type);
 
 	const sameName = cache.find(entry => entry.realName === name);
-	if(sameName && objectSimilarity(sameName.type, type) !== 0){
-		return sameName.add(type);
+	if(sameName){
+		if(objectSimilarity(sameName.type, type) > 0.3){
+			return sameName.add(type);
+		}else{
+			const t = new TypeDeclaration('\xFF' + cache.length.toString() + '\xFF', name + cache.length.toString());
+			cache.push(t);
+
+			return t.add(type);
+		}
 	}
 
 	const [similarType] = cache.sort((a, b) => a.similarity(type) - b.similarity(type));
@@ -154,6 +161,36 @@ function cacheProp(cache: TypeDeclaration[], prop: Prop, name: string): void {
 	}
 }
 
+/*
+function isUnion(type: string): boolean {
+	let counter = 1;
+	let inString = false;
+	for(let i = 0; i < type.length; i++){
+		const char = type[i];
+
+		if(char === '"'){
+			let count = 0;
+			while(type[i - 1 - count] === '\\') count++;
+			if(count % 2 === 1) continue;
+
+			inString = !inString;
+			continue;
+		}
+		if(inString) continue;
+
+		if(char === '{'){
+			counter++;
+		}else if(char === '}'){
+			counter--;
+		}else if(char === '|' && counter === 0){
+			return true;
+		}
+	}
+
+	return false;
+}
+*/
+
 function stringifyPropType(cache: TypeDeclaration[], type: PropType): string {
 	if(typeof type === 'string') return type;
 
@@ -171,9 +208,12 @@ function stringifyPropType(cache: TypeDeclaration[], type: PropType): string {
 		}else if(arr.length <= type.length / 2){
 			return `Array<${stringified.join(' | ')}>`; // Array<type1 | type2>
 		}else return `[\n${
-			utils.indent(type.map(prop =>
-				stringifyProp(cache, prop) + (prop.optional ? '?' : '')
-			).join(',\n'))
+			utils.indent(type.map(prop => {
+				if(prop.optional){
+					const str = stringifyProp(cache, prop);
+					return (prop.types.length > 1 ? `(${str})` : str) + '?';
+				}else return stringifyProp(cache, prop);
+			}).join(',\n'))
 		}\n]`; // [type1, type2, type3, ...]
 	}else{
 		const keys = Object.keys(type);
