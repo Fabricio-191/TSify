@@ -4,5 +4,5 @@ import TSify, { toFile } from '../src';
 
 import { readFileSync } from 'fs';
 toFile('raw.d.ts', JSON.parse(
-	readFileSync(__dirname + '/raw.json').toString()
+	readFileSync(__dirname + '/raw2.json').toString()
 ));
