@@ -59,6 +59,11 @@ function objectSimilarity(a: object, b: object): number {
 	return similarity > 1 ? 1 : similarity;
 }
 
+function sharesOneKey(a: object, b: object): boolean {
+	const keysA = Object.keys(a);
+	return Object.keys(b).some(k => keysA.includes(k));
+}
+
 class TypeDeclaration {
 	constructor(name: string){
 		this.name = name;
@@ -73,9 +78,10 @@ class TypeDeclaration {
 		return this.references.length;
 	}
 
-	public add(reference: Obj): void {
+	public add(reference: Obj): string {
 		this.references.push(reference);
 		this.type = joinObjects(...this.references);
+		return this.name;
 	}
 
 	public similarity(otherType: Obj): number {
@@ -86,7 +92,7 @@ class TypeDeclaration {
 class Types {
 	public readonly cache: TypeDeclaration[] = [];
 
-	private manageObj(type: Obj, name: string): void {
+	private manageObj(type: Obj, name: string): string {
 		const sameType = this.cache.find(entry =>
 			deepStrictEqual(entry.type, entry) ||
 			entry.references.some(ref => deepStrictEqual(ref, type))
@@ -94,10 +100,8 @@ class Types {
 		if(sameType) return sameType.add(type);
 
 		const sameName = this.cache.find(entry => entry.name === name);
-		if(sameName){
-			if(objectSimilarity(sameName.type, type) > 0.3){
-				return sameName.add(type);
-			}
+		if(sameName && sharesOneKey(sameName.type, type)){
+			return sameName.add(type);
 		}
 
 		const [similarType] = this.cache.sort((a, b) => a.similarity(type) - b.similarity(type));
@@ -111,8 +115,8 @@ class Types {
 		);
 		if(
 			similiarName &&
-			stringSimilarity(similiarName.name, name) > 0.7 &&
-			objectSimilarity(similiarName.type, type) > 0.3
+			stringSimilarity(similiarName.name, name) > 0.6 &&
+			sharesOneKey(similiarName.type, type)
 		){
 			return similiarName.add(type);
 		}
@@ -124,25 +128,40 @@ class Types {
 	}
 
 	public add(prop: Prop, name: string): void {
-		for(const type of prop.types){
+		for(let i = 0; i < prop.types.length; i++){
+			const type = prop.types[i];
 			if(isObject(type)){
 				for(const key in type){
 					this.add(type[key] as Prop, key);
 				}
 
-				this.manageObj(type, name);
+				prop.types[i] = this.manageObj(type, name);
 			}else if(isArray(type)){
 				type.forEach(p => this.add(p, name));
 			}
 		}
 	}
 
-	public replaceTypes(obj: Obj): void {
-		
+	public replaceInObj(obj: Obj): void {
+		for(const key in obj){
+			this.replace(obj[key] as Prop);
+		}
 	}
 
-	public replaceTypesInProp(prop: Prop): void {
-		
+	public replace(prop: Prop): void {
+		for(let i = 0; i < prop.types.length; i++){
+			const type = prop.types[i];
+			if(isArray(type)){
+				type.forEach(p => this.replace(p));
+			}
+			const entry = this.cache.find(e => e.name === type);
+
+			if(entry && entry.uses === 1){
+				prop.types[i] = entry.type;
+
+				this.replaceInObj(entry.type);
+			}
+		}
 	}
 }
 
@@ -151,12 +170,18 @@ export default function makeDeclarations(parsed: Prop): string {
 
 	types.add(parsed, 'FinalData');
 
-	let str = '';
-	for(const entry of types.cache){
-		if(entry.uses >= 2){
-			str += `interface ${entry.name} ${stringifyObj(entry.type)};\n\n`;
+	const declarations = [
+		'/* eslint-disable @typescript-eslint/ban-types */\n',
+	];
+	for(const entry of types.cache.sort((a, b) => b.uses - a.uses)){
+		types.replaceInObj(entry.type);
+
+		if(entry.uses !== 1){
+			declarations.push(`interface ${entry.name} ${stringifyObj(entry.type)};\n`);
 		}
 	}
 
-	return str;
+	types.replace(parsed);
+
+	return declarations.join('\n');
 }
