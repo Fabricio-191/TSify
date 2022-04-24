@@ -3,17 +3,13 @@
 import { readFileSync } from 'fs';
 import TSify, { toFile } from '../src';
 
-const obj1 = { a: 1 };
-const obj2 = { t: obj1, d: obj1 };
+const obj1 = { z: 123 };
+const obj2 = { obj1, b: obj1 }
 
-console.log(TSify({
-	a1: obj2,
-	a2: obj2,
-	a3: obj2,
-}))
+console.log(TSify({ obj2, n: obj2 }))
 
 /*
 toFile(__dirname + '/raw.d.ts', JSON.parse(
-	readFileSync(__dirname + '/raw2.json').toString()
+	readFileSync(__dirname + '/raw.json').toString()
 ));
 */

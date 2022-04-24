@@ -1,10 +1,8 @@
 /* eslint-disable no-else-return */
-// @ts-expect-error asdasd
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import type { Prop, Obj, Arr, PropType } from './utils';
+import type { Prop, Obj } from './utils';
 import { logAll } from './utils'; logAll();
 import { joinObjects } from './parse';
-import { stringifyPropType } from './stringify';
+import { stringifyObj } from './stringify';
 
 import * as deepStrictEqual from 'fast-deep-equal/es6';
 import { compareTwoStrings as stringSimilarity } from 'string-similarity';
@@ -63,22 +61,16 @@ function objectSimilarity(a: object, b: object): number {
 
 class TypeDeclaration {
 	constructor(name: string){
-		this.realName = name;
+		this.name = name;
 		// Object.defineProperty(this, 'references', { enumerable: false });
 	}
-	public realName: string;
+	public name: string;
 	public type!: Obj;
 	public declare?: true;
 	public readonly references: Obj[] = [];
 
 	public get uses(): number {
 		return this.references.length;
-	}
-
-	public get name(): string {
-		return this.realName.includes('[]') ?
-			this.realName.replace('[]', '') :
-			this.realName;
 	}
 
 	public add(reference: Obj): void {
@@ -101,7 +93,7 @@ class Types {
 		);
 		if(sameType) return sameType.add(type);
 
-		const sameName = this.cache.find(entry => entry.realName === name);
+		const sameName = this.cache.find(entry => entry.name === name);
 		if(sameName){
 			if(objectSimilarity(sameName.type, type) > 0.3){
 				return sameName.add(type);
@@ -145,30 +137,12 @@ class Types {
 		}
 	}
 
-	public replaceTypes({ types }: Prop): void {
-		for(let i = 0; i < types.length; i++){
-			const type = types[i];
-
-			if(Array.isArray(type)){
-				type.forEach(t => this.replaceTypes(t));
-			}else if(isObject(type)){
-				for(const key in type){
-					this.replaceTypes(type[key] as Prop);
-				}
-
-				const entry = this.cache.find(t => t.references.includes(type));
-
-				if(entry && entry.uses >= 2){
-					types[i] = entry.name;
-				}
-			}
-		}
+	public replaceTypes(obj: Obj): void {
+		
 	}
 
-	public replaceTypesInObj(type: Obj): void {
-		for(const key in type){
-			this.replaceTypes(type[key] as Prop);
-		}
+	public replaceTypesInProp(prop: Prop): void {
+		
 	}
 }
 
@@ -176,14 +150,11 @@ export default function makeDeclarations(parsed: Prop): string {
 	const types = new Types();
 
 	types.add(parsed, 'FinalData');
-	types.replaceTypes(parsed);
 
 	let str = '';
 	for(const entry of types.cache){
-		types.replaceTypesInObj(entry.type);
-
 		if(entry.uses >= 2){
-			str += `interface ${entry.name} ${stringifyPropType(entry.type)};\n\n`;
+			str += `interface ${entry.name} ${stringifyObj(entry.type)};\n\n`;
 		}
 	}
 
