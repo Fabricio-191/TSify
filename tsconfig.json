@@ -39,6 +39,6 @@
 		"suppressImplicitAnyIndexErrors": true,
 		"experimentalDecorators": true
 	},
-	"include": ["src", "src/old/raw.d.ts", "test"],
+	"include": ["src", "src/old/raw.d.ts", "test", "../youtube/src/playlist/rawPlaylist.d.ts", "../youtube/src/video/rawVideo.d.ts", "../youtube/src/search/rawSearch.d.ts"],
 	"exclude": ["lib"],
 }

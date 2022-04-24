@@ -165,6 +165,18 @@ class Types {
 	}
 }
 
+function order(a: TypeDeclaration, b: TypeDeclaration): number {
+	if(stringSimilarity(a.name, b.name) > 0.6){
+		if(a.name < b.name){
+		  return -1;
+		}
+		if(a.name > b.name){
+		  return 1;
+		}
+		return 0;
+	}else return b.uses - a.uses;
+}
+
 export default function makeDeclarations(parsed: Prop): string {
 	const types = new Types();
 
@@ -173,7 +185,7 @@ export default function makeDeclarations(parsed: Prop): string {
 	const declarations = [
 		'/* eslint-disable @typescript-eslint/ban-types */\n',
 	];
-	for(const entry of types.cache.sort((a, b) => b.uses - a.uses)){
+	for(const entry of types.cache.sort(order)){
 		types.replaceInObj(entry.type);
 
 		if(entry.uses !== 1){
