@@ -3,15 +3,30 @@
 import { readFileSync } from 'fs';
 import TSify, { toFile } from '../src';
 
-const obj1 = { z: 123 };
-const obj2 = { obj1, b: obj1 }
-
-console.log(TSify({ obj2, n: obj2 }))
+/*
+console.log(
+	TSify({
+		a: {
+			prop1: {
+				prop2: 123,
+			}
+		},
+		b: {
+			prop1: {
+				prop3: 123,
+			}
+		}
+	})
+)
+*/
 
 const data = JSON.parse(
 	readFileSync(__dirname + '/raw.json').toString()
 );
 
-toFile(__dirname + '/rawVideo.d.ts', data.video);
+toFile(__dirname + '/raw.d.ts', data);
+/*
+toFile(__dirname + '/rawVideo.d.ts'   , data.video   );
 toFile(__dirname + '/rawPlaylist.d.ts', data.playlist);
-toFile(__dirname + '/rawSearch.d.ts', data.search);
+toFile(__dirname + '/rawSearch.d.ts'  , data.search  );
+*/
