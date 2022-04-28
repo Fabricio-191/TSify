@@ -243,18 +243,29 @@ function order(a: TypeDeclaration, b: TypeDeclaration): number {
 	}else return b.uses - a.uses;
 }
 
+function time(start: number): void {
+	const end = Date.now();
+	console.log('end', end - start);
+}
+
 export default function makeDeclarations(parsed: Prop): string {
 	const types = new Types();
 
-	// console.log('a');
+	console.log('a');
+	let start = Date.now();
 	types.add(parsed, 'FinalData1');
-	// console.log('b');
+	time(start);
+
+	console.log('b');
+	start = Date.now();
 	for(const t of types.cache){
 		t.type = joinObjects(...t.references);
 		types.countUses(t);
 	}
-	// console.log('c');
+	time(start);
 
+	console.log('c');
+	start = Date.now();
 	const declarations = [];
 	for(const t of types.cache.sort(order)){
 		types.replaceInObj(t.type);
@@ -262,9 +273,14 @@ export default function makeDeclarations(parsed: Prop): string {
 
 		declarations.push(`export interface ${t.name} ${stringifyObj(t.type)};\n`);
 	}
-	// console.log('d');
+	time(start);
+
+	console.log('d');
+	start = Date.now();
 	types.replace(parsed);
-	// console.log('e');
+	time(start);
+
+	console.log('e');
 
 	return declarations.join('\n');
 }

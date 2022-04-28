@@ -5,8 +5,7 @@
   "scripts": {
     "lint": "npx eslint . --fix ",
     "test": "nodemon -e ts --exec ts-node test/test.ts",
-	"run": "ts-node test/test.ts && npm run lint",
-    "git": "git pull && git add . && git commit -m - && git push"
+	"run": "ts-node test/test.ts && npm run lint"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.17.0",

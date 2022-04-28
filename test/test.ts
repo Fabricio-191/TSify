@@ -25,8 +25,6 @@ const data = JSON.parse(
 );
 
 toFile(__dirname + '/raw.d.ts', data);
-/*
 toFile(__dirname + '/rawVideo.d.ts'   , data.video   );
 toFile(__dirname + '/rawPlaylist.d.ts', data.playlist);
 toFile(__dirname + '/rawSearch.d.ts'  , data.search  );
-*/
