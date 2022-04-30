@@ -4,56 +4,8 @@ import { logAll } from './utils'; logAll();
 import { joinObjects } from './parse';
 import { stringifyObj } from './stringify';
 
-import * as deepStrictEqual from 'fast-deep-equal/es6';
 import { compareTwoStrings as stringSimilarity } from 'string-similarity';
 const { isArray } = Array;
-
-/*
-https://www.npmjs.com/package/nearest-neighbor
-https://www.npmjs.com/package/fuzzy-equal
-https://www.npmjs.com/package/alike
-*/
-function objectSimilarity(a: object, b: object): number {
-	if(typeof a !== 'object' || typeof b !== 'object' || isArray(a) !== isArray(b)) return 0;
-	if(deepStrictEqual(a, b)) return 1;
-	let similarity = 0;
-
-	const keysA = Object.keys(a);
-	const keysB = Object.keys(b);
-	if(deepStrictEqual(keysA, keysB)){
-		similarity += 0.6;
-	// eslint-disable-next-line @typescript-eslint/require-array-sort-compare
-	}else if(deepStrictEqual(keysA.sort(), keysB.sort())){
-		similarity += 0.4;
-	}
-
-	const keyValue = 1 / (keysA.length + keysB.length) / 2;
-	for(const key of keysA){
-		if(key in b){
-			if(deepStrictEqual(a[key], b[key])){
-				similarity += keyValue * 4;
-				continue;
-			}
-
-			const typeA = typeof a[key];
-			const typeB = typeof b[key];
-
-			if(typeA === typeB){
-				if(typeA === 'object'){
-					similarity += keyValue * 4 * objectSimilarity(a[key], b[key]);
-				}else{
-					similarity += keyValue * 2;
-				}
-			}else{
-				similarity += keyValue;
-			}
-		}else{
-			similarity -= keyValue;
-		}
-	}
-
-	return similarity > 1 ? 1 : similarity;
-}
 
 function sharesOneKey(a: object, b: object): boolean {
 	for(const key in a){
@@ -82,46 +34,51 @@ class TypeDeclaration {
 	}
 
 	public similarity(type: Obj): number {
-		return this.references.slice(1).reduce<{
-			similarity: number;
-			reference: Obj;
-		}>((acc, reference) => {
-			const similarity = objectSimilarity(reference, type);
-			if(similarity > acc.similarity){
-				acc.similarity = similarity;
-				acc.reference = reference;
-			}
-			return acc;
-		}, {
-			similarity: objectSimilarity(this.references[0], type),
-			reference: this.references[0],
-		}).similarity;
-	}
+		const typeKeys = Object.keys(type);
 
-	public isEqual(type: Obj): boolean {
-		return this.references.some(ref => deepStrictEqual(ref, type));
+		for(const reference of this.references) {
+			const referenceKeys = Object.keys(reference);
+
+			if(typeKeys.length !== referenceKeys.length) continue;
+		}
 	}
 }
 
 class Types {
 	public readonly cache: TypeDeclaration[] = [];
 
-	private manageObj(type: Obj, name: string): string {
-		const sameType = this.cache.find(entry => entry.isEqual(type));
-		if(sameType) return sameType.add(type);
+	private findSameType(type: Obj): TypeDeclaration | null {
+		const typeKeys = Object.keys(type);
 
+		return this.cache.find(entry => {
+			const entryKeys = Object.keys(entry.type);
+
+			if(entryKeys.length !== typeKeys.length) return false;
+
+			for(const key of typeKeys){
+				if(entry.type[key] !== type[key]) return false;
+			}
+
+			return true;
+		}) ?? null;
+	}
+
+	private manageObj(type: Obj, name: string): string {
 		const sameName = this.getByName(name);
 		if(sameName?.references.some(ref => sharesOneKey(ref, type))){
 			return sameName.add(type);
 		}
 
-		const similiarName = this.findSimilarName(name);
+		const sameType = this.findSameType(type);
+		if(sameType) return sameType.add(type);
+
+		const similiarName = this.findSimilar(entry => stringSimilarity(entry.realName, name));
 		if(similiarName?.references.some(ref => sharesOneKey(ref, type))){
 			return similiarName.add(type);
 		}
 
-		const similarType = this.findSimilarType(type);
-		if(similarType) return similarType.add(type);
+		const similiarType = this.findSimilar(entry => entry.similarity(type));
+		if(similiarType) return similiarType.add(type);
 
 		const t = new TypeDeclaration(
 			name,
@@ -134,49 +91,24 @@ class Types {
 	}
 
 	public getByName(name: string): TypeDeclaration | null {
-		return this.cache.find(entry => entry.name === name) ?? null;
+		return this.cache.find(entry => entry.realName === name) ?? null;
 	}
 
-	private findSimilarName(name: string): TypeDeclaration | null {
-		if(this.cache.length === 0) return null;
-
-		const mostSimilar = this.cache.reduce<{
-			similarity: number;
-			entry: TypeDeclaration;
-		}>((acc, entry) => {
-			const similarity = stringSimilarity(entry.name, name);
-			if(similarity > acc.similarity){
-				acc.similarity = similarity;
-				acc.entry = entry;
-			}
-			return acc;
-		}, {
-			similarity: stringSimilarity(
-				(this.cache[0] as TypeDeclaration).name, name
-			),
-			entry: this.cache[0] as TypeDeclaration,
-		});
-
-		if(mostSimilar.similarity > 0.6){
-			return mostSimilar.entry;
-		}else return null;
-	}
-
-	private findSimilarType(type: Obj): TypeDeclaration | null {
+	private findSimilar(similarityFn: (entry: TypeDeclaration) => number): TypeDeclaration | null {
 		if(this.cache.length === 0) return null;
 
 		const mostSimilar = this.cache.slice(1).reduce<{
 			similarity: number;
 			entry: TypeDeclaration;
 		}>((acc, entry) => {
-			const similarity = entry.similarity(type);
+			const similarity = similarityFn(entry);
 			if(similarity > acc.similarity){
 				acc.similarity = similarity;
 				acc.entry = entry;
 			}
 			return acc;
 		}, {
-			similarity: objectSimilarity(this.cache[0] as TypeDeclaration, type),
+			similarity: similarityFn(this.cache[0] as TypeDeclaration),
 			entry: this.cache[0] as TypeDeclaration,
 		});
 
@@ -243,29 +175,16 @@ function order(a: TypeDeclaration, b: TypeDeclaration): number {
 	}else return b.uses - a.uses;
 }
 
-function time(start: number): void {
-	const end = Date.now();
-	console.log('end', end - start);
-}
-
 export default function makeDeclarations(parsed: Prop): string {
 	const types = new Types();
 
-	console.log('a');
-	let start = Date.now();
 	types.add(parsed, 'FinalData1');
-	time(start);
 
-	console.log('b');
-	start = Date.now();
 	for(const t of types.cache){
 		t.type = joinObjects(...t.references);
 		types.countUses(t);
 	}
-	time(start);
 
-	console.log('c');
-	start = Date.now();
 	const declarations = [];
 	for(const t of types.cache.sort(order)){
 		types.replaceInObj(t.type);
@@ -273,14 +192,8 @@ export default function makeDeclarations(parsed: Prop): string {
 
 		declarations.push(`export interface ${t.name} ${stringifyObj(t.type)};\n`);
 	}
-	time(start);
 
-	console.log('d');
-	start = Date.now();
 	types.replace(parsed);
-	time(start);
-
-	console.log('e');
 
 	return declarations.join('\n');
 }

@@ -4,6 +4,7 @@
   "deprecated": false,
   "scripts": {
     "lint": "npx eslint . --fix ",
+	"bench": "node --inspect -r ts-node/register test/test.ts && npm run lint",
     "test": "nodemon -e ts --exec ts-node test/test.ts",
 	"run": "ts-node test/test.ts && npm run lint"
   },

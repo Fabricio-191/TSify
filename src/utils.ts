@@ -25,9 +25,11 @@ export function joinKeys(...objs: object[]): string[] {
 	return joinArrays(...objs.map(Object.keys));
 }
 
+/*
 export function arrayHasOneValue(arr: unknown[]): boolean {
 	return arr.every(x => x === arr[0]);
 }
+*/
 
 export function indent(str: string, indentation = '\t'): string {
 	return str.replace(/^/gm, indentation);
