@@ -3,7 +3,6 @@
 import { readFileSync } from 'fs';
 import TSify, { toFile } from '../src';
 
-/*
 console.log(
 	TSify({
 		a: {
@@ -18,7 +17,7 @@ console.log(
 		}
 	})
 )
-*/
+/*
 
 const data = JSON.parse(
 	readFileSync(__dirname + '/raw.json').toString()

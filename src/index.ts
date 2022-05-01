@@ -1,6 +1,6 @@
 import { parse, joinParsed } from './parse';
 import stringify from './stringify';
-import makeDeclarations from './cache';
+import makeDeclarations from './declarations/';
 import { writeFileSync } from 'fs';
 
 export default function TSify(...things: unknown[]): string {
