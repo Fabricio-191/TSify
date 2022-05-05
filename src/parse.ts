@@ -54,6 +54,7 @@ export function joinArrays(...arrs: Arr[]): Arr {
 			(result[i] as Prop).optional = true;
 		}
 	}
+
 	return result;
 }
 

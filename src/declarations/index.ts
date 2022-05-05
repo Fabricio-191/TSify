@@ -2,7 +2,6 @@
 import type { Prop } from '../utils';
 import type { TypeDeclaration, Cache } from './cache';
 import manageObj from './cache';
-import { logAll } from '../utils'; logAll();
 import replacer from './replacer';
 const { isArray } = Array;
 
@@ -21,7 +20,7 @@ function add(cache: Cache, prop: Prop, name: string): void {
 	}
 }
 
-export default function makeDeclarations(parsed: Prop): string {
+export default function makeDeclarations(parsed: Prop): TypeDeclaration[] {
 	const cache: TypeDeclaration[] = [];
 
 	add(cache, parsed, 'FinalData1');

@@ -2,7 +2,6 @@
 import type { Cache, TypeDeclaration } from './cache';
 import type { Prop, Obj } from '../utils';
 import { joinObjects } from '../parse';
-import { stringifyObj } from '../stringify';
 import { compareTwoStrings as stringSimilarity } from 'string-similarity';
 const { isArray } = Array;
 
@@ -48,21 +47,21 @@ function order(a: TypeDeclaration, b: TypeDeclaration): number {
 	}else return b.uses - a.uses;
 }
 
-export default function makeDeclarations(cache: Cache, parsed: Prop): string {
+export default function makeDeclarations(cache: Cache, parsed: Prop): TypeDeclaration[] {
 	for(const t of cache){
 		t.type = joinObjects(...t.references);
 		countUses(cache, t);
 	}
 
-	const declarations = [];
+	const declarations: TypeDeclaration[] = [];
 	for(const t of cache.sort(order)){
 		replaceInObj(cache, t.type);
 		if(t.uses <= 1) continue;
 
-		declarations.push(`export interface ${t.name} ${stringifyObj(t.type)};\n`);
+		declarations.push(t);
 	}
 
 	replace(cache, parsed);
 
-	return declarations.join('\n');
+	return declarations;
 }
