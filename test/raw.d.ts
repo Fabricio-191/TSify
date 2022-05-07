@@ -1,18 +1,18 @@
-export interface title {
+interface title {
 	runs: runs[];
 	accessibility?: accessibility;
-};
+}
 
-export interface viewCount {
+interface viewCount {
 	simpleText?: string;
 	videoViewCountRenderer?: {
 		viewCount: viewCount;
 		shortViewCount: viewCount;
 	};
 	accessibility?: accessibility;
-};
+}
 
-export interface navigationEndpoints {
+interface navigationEndpoints {
 	clickTrackingParams: string;
 	commandMetadata: commandMetadata;
 	watchEndpoint?: watchEndpoint;
@@ -27,7 +27,7 @@ export interface navigationEndpoints {
 		browseId: string;
 		canonicalBaseUrl?: string;
 	};
-	urlEndpoint?: webCommandMetadata | commonConfig;
+	urlEndpoint?: commonConfig | webCommandMetadata;
 	continuationCommand?: {
 		token: string;
 		request: string;
@@ -41,25 +41,25 @@ export interface navigationEndpoints {
 	subscribeEndpoint?: serviceTrackingParams;
 	unsubscribeEndpoint?: serviceTrackingParams;
 	reelWatchEndpoint?: watchEndpoint;
-};
+}
 
-export interface button {
+interface button {
 	buttonRenderer?: buttonRenderer;
 	toggleButtonRenderer?: buttonRenderer;
-};
+}
 
-export interface buttonRenderer {
-	style?: string | style | subscriptionButton;
+interface buttonRenderer {
+	style?: style | subscriptionButton | string;
 	size?: string | {
 		sizeType: string;
 	};
 	isDisabled?: boolean;
-	text?: viewCount | title;
+	text?: title | viewCount;
 	navigationEndpoint?: navigationEndpoints;
 	trackingParams: string;
 	isToggled?: boolean;
 	defaultIcon?: icon;
-	defaultText?: viewCount | title;
+	defaultText?: title | viewCount;
 	toggledText?: viewCount;
 	accessibility?: accessibility;
 	defaultTooltip?: string;
@@ -76,7 +76,7 @@ export interface buttonRenderer {
 	serviceEndpoint?: navigationEndpoints;
 	icon?: icon;
 	tooltip?: string;
-	command?: navigationEndpoints | commands;
+	command?: commands | navigationEndpoints;
 	defaultServiceEndpoint?: navigationEndpoints;
 	toggledServiceEndpoint?: navigationEndpoints;
 	toggledIcon?: icon;
@@ -129,9 +129,9 @@ export interface buttonRenderer {
 	};
 	nextItemButton?: button;
 	prevItemButton?: button;
-};
+}
 
-export interface unifiedSharePanelRenderer {
+interface unifiedSharePanelRenderer {
 	trackingParams: string;
 	showLoadingSpinner?: boolean;
 	contents?: {
@@ -162,7 +162,7 @@ export interface unifiedSharePanelRenderer {
 		playlistVideoListRenderer?: playlistPanelVideoRenderer;
 		twoColumnBrowseResultsRenderer?: {
 			tabs: {
-				tabRenderer: metadataBadgeRenderer | buttonRenderer;
+				tabRenderer: buttonRenderer | metadataBadgeRenderer;
 			}[];
 		};
 		searchPyvRenderer?: buttonRenderer;
@@ -176,7 +176,7 @@ export interface unifiedSharePanelRenderer {
 			primaryContents: content;
 		};
 	}[];
-	responseText?: viewCount | title;
+	responseText?: title | viewCount;
 	topLevelButtons?: {
 		toggleButtonRenderer?: buttonRenderer;
 		buttonRenderer?: buttonRenderer;
@@ -186,9 +186,9 @@ export interface unifiedSharePanelRenderer {
 	};
 	items?: [
 		{
-			menuNavigationItemRenderer: menuNavigationItemRenderer;
-		} | {
 			compactLinkRenderer: compactVideoRenderer;
+		} | {
+			menuNavigationItemRenderer: menuNavigationItemRenderer;
 		} | {
 			playlistSidebarPrimaryInfoRenderer: videoPrimaryInfoRenderer;
 		},
@@ -214,41 +214,41 @@ export interface unifiedSharePanelRenderer {
 	subscriberCountText?: viewCount;
 	subscribeButton?: button;
 	longBylineText?: title;
-};
+}
 
-export interface icon {
+interface icon {
 	iconType: string;
-};
+}
 
-export interface thumbnail {
-	thumbnails: Array<webCommandMetadata | commonConfig | webCommandMetadata>;
+interface thumbnail {
+	thumbnails: Array<commonConfig | webCommandMetadata | webCommandMetadata>;
 	sampledThumbnailColor?: {
 		red: number;
 		green: number;
 		blue: number;
 	};
 	isOriginalAspectRatio?: boolean;
-};
+}
 
-export interface accessibility {
+interface accessibility {
 	accessibilityData?: accessibilityData;
 	label?: string;
-};
+}
 
-export interface accessibilityData {
-	label?: string | title;
+interface accessibilityData {
+	label?: title | string;
 	accessibilityData?: accessibilityData;
 	hotkey?: string;
 	hotkeyAccessibilityLabel?: accessibilityData;
-};
+}
 
-export interface metadataBadgeRenderer {
+interface metadataBadgeRenderer {
 	icon?: icon;
 	style?: string;
 	tooltip?: string;
 	trackingParams?: string;
 	accessibilityData?: accessibilityData;
-	label?: string | viewCount;
+	label?: viewCount | string;
 	results?: {
 		results?: unifiedSharePanelRenderer;
 		compactVideoRenderer?: compactVideoRenderer;
@@ -278,18 +278,18 @@ export interface metadataBadgeRenderer {
 	iosAppindexingLink?: string;
 	navigationEndpoint?: searchEndpoint;
 	status?: string;
-};
+}
 
-export interface videostatsPlaybackUrl {
+interface videostatsPlaybackUrl {
 	baseUrl: string;
 	elapsedMediaTimeSeconds?: number;
-};
+}
 
-export interface videoActions {
-	menuRenderer: menuNavigationItemRenderer | unifiedSharePanelRenderer | menuRenderer;
-};
+interface videoActions {
+	menuRenderer: menuNavigationItemRenderer | menuRenderer | unifiedSharePanelRenderer;
+}
 
-export interface WEB_PLAYER_CONTEXT_CONFIG_ID_KEVLAR_WATCH {
+interface WEB_PLAYER_CONTEXT_CONFIG_ID_KEVLAR_WATCH {
 	transparentBackground?: boolean;
 	showMiniplayerButton?: boolean;
 	externalFullscreen?: boolean;
@@ -335,12 +335,12 @@ export interface WEB_PLAYER_CONTEXT_CONFIG_ID_KEVLAR_WATCH {
 	disableSeek?: boolean;
 	disablePaidContentOverlay?: boolean;
 	showInlinePreviewUi?: boolean;
-};
+}
 
-export interface metadataRowHeaderRenderer {
+interface metadataRowHeaderRenderer {
 	content?: title;
 	hasDividerLine?: boolean;
-	title?: viewCount | title;
+	title?: title | viewCount;
 	contents?: {
 		videoPrimaryInfoRenderer?: videoPrimaryInfoRenderer;
 		simpleText?: string;
@@ -369,7 +369,7 @@ export interface metadataRowHeaderRenderer {
 		playlistVideoListRenderer?: playlistPanelVideoRenderer;
 		twoColumnBrowseResultsRenderer?: {
 			tabs: {
-				tabRenderer: metadataBadgeRenderer | buttonRenderer;
+				tabRenderer: buttonRenderer | metadataBadgeRenderer;
 			}[];
 		};
 		searchPyvRenderer?: buttonRenderer;
@@ -399,12 +399,12 @@ export interface metadataRowHeaderRenderer {
 		searchSubMenuRenderer: menuRenderer;
 	};
 	hideBottomSeparator?: boolean;
-};
+}
 
-export interface compactVideoRenderer {
+interface compactVideoRenderer {
 	videoId?: string;
 	thumbnail?: thumbnail;
-	title: viewCount | title;
+	title: title | viewCount;
 	longBylineText?: title | viewCount;
 	publishedTimeText?: viewCount;
 	viewCountText?: viewCount;
@@ -456,10 +456,10 @@ export interface compactVideoRenderer {
 	adBadge?: {
 		metadataBadgeRenderer: metadataBadgeRenderer;
 	};
-};
+}
 
-export interface playlistPanelVideoRenderer {
-	title?: viewCount | title;
+interface playlistPanelVideoRenderer {
+	title?: title | viewCount;
 	longBylineText?: title | viewCount;
 	thumbnail?: thumbnail;
 	lengthText?: viewCount;
@@ -521,7 +521,7 @@ export interface playlistPanelVideoRenderer {
 		playlistVideoListRenderer?: playlistPanelVideoRenderer;
 		twoColumnBrowseResultsRenderer?: {
 			tabs: {
-				tabRenderer: metadataBadgeRenderer | buttonRenderer;
+				tabRenderer: buttonRenderer | metadataBadgeRenderer;
 			}[];
 		};
 		searchPyvRenderer?: buttonRenderer;
@@ -552,12 +552,12 @@ export interface playlistPanelVideoRenderer {
 	ownerBadges?: {
 		metadataBadgeRenderer: metadataBadgeRenderer;
 	}[];
-};
+}
 
-export interface menuNavigationItemRenderer {
+interface menuNavigationItemRenderer {
 	text?: title | viewCount;
 	icon?: icon;
-	navigationEndpoint?: navigationEndpoints | commands;
+	navigationEndpoint?: commands | navigationEndpoints;
 	trackingParams?: string;
 	items?: Array<{
 		menuNavigationItemRenderer: menuNavigationItemRenderer;
@@ -591,7 +591,7 @@ export interface menuNavigationItemRenderer {
 		playlistVideoListRenderer?: playlistPanelVideoRenderer;
 		twoColumnBrowseResultsRenderer?: {
 			tabs: {
-				tabRenderer: metadataBadgeRenderer | buttonRenderer;
+				tabRenderer: buttonRenderer | metadataBadgeRenderer;
 			}[];
 		};
 		searchPyvRenderer?: buttonRenderer;
@@ -632,7 +632,7 @@ export interface menuNavigationItemRenderer {
 		playlistVideoListRenderer?: playlistPanelVideoRenderer;
 		twoColumnBrowseResultsRenderer?: {
 			tabs: {
-				tabRenderer: metadataBadgeRenderer | buttonRenderer;
+				tabRenderer: buttonRenderer | metadataBadgeRenderer;
 			}[];
 		};
 		searchPyvRenderer?: buttonRenderer;
@@ -656,14 +656,14 @@ export interface menuNavigationItemRenderer {
 	thumbnail?: thumbnail;
 	collapsedItemCount?: number;
 	collapsedStateButtonText?: title;
-};
+}
 
-export interface subscriptionButton {
+interface subscriptionButton {
 	type?: string;
 	subscribed?: boolean;
-};
+}
 
-export interface videoOwnerRenderer {
+interface videoOwnerRenderer {
 	thumbnail: thumbnail;
 	title?: title | viewCount;
 	subscriptionButton?: subscriptionButton;
@@ -674,7 +674,7 @@ export interface videoOwnerRenderer {
 		metadataBadgeRenderer: metadataBadgeRenderer;
 	}[];
 	playlistId?: string;
-	longBylineText?: viewCount | title;
+	longBylineText?: title | viewCount;
 	videoCountText?: title;
 	videoId?: string;
 	publishedTimeText?: viewCount;
@@ -735,9 +735,9 @@ export interface videoOwnerRenderer {
 	};
 	query?: title;
 	searchEndpoint?: searchEndpoint;
-};
+}
 
-export interface menuRenderer {
+interface menuRenderer {
 	trackingParams?: string;
 	sections?: {
 		multiPageMenuSectionRenderer?: unifiedSharePanelRenderer;
@@ -747,10 +747,10 @@ export interface menuRenderer {
 	multiPageMenuRenderer?: menuRenderer;
 	showLoadingSpinner?: boolean;
 	items?: {
-		menuServiceItemRenderer: menuNavigationItemRenderer;
-	} | {
 		menuNavigationItemRenderer: menuNavigationItemRenderer;
-	}[];
+	}[] | {
+		menuServiceItemRenderer: menuNavigationItemRenderer;
+	};
 	accessibility?: accessibility;
 	topLevelButtons?: {
 		toggleButtonRenderer?: buttonRenderer;
@@ -761,10 +761,10 @@ export interface menuRenderer {
 		searchFilterGroupRenderer: modalWithTitleAndButtonRenderer;
 	}[];
 	button?: button;
-};
+}
 
-export interface webCommandMetadata {
-	url?: string | interpreterSafeUrl;
+interface webCommandMetadata {
+	url?: interpreterSafeUrl | string;
 	webPageType?: string;
 	rootVe?: number;
 	ignoreNavigation?: boolean;
@@ -775,9 +775,9 @@ export interface webCommandMetadata {
 	target?: string;
 	nofollow?: boolean;
 	trackingParams?: string;
-};
+}
 
-export interface commands {
+interface commands {
 	clickTrackingParams?: string;
 	openPopupAction?: openPopupAction;
 	changeEngagementPanelVisibilityAction?: changeEngagementPanelVisibilityAction;
@@ -796,9 +796,9 @@ export interface commands {
 	};
 	urlEndpoint?: webCommandMetadata;
 	appendContinuationItemsAction?: changeEngagementPanelVisibilityAction;
-};
+}
 
-export interface playlist {
+interface playlist {
 	title?: string;
 	contents?: {
 		videoPrimaryInfoRenderer?: videoPrimaryInfoRenderer;
@@ -828,7 +828,7 @@ export interface playlist {
 		playlistVideoListRenderer?: playlistPanelVideoRenderer;
 		twoColumnBrowseResultsRenderer?: {
 			tabs: {
-				tabRenderer: metadataBadgeRenderer | buttonRenderer;
+				tabRenderer: buttonRenderer | metadataBadgeRenderer;
 			}[];
 		};
 		searchPyvRenderer?: buttonRenderer;
@@ -1575,44 +1575,44 @@ export interface playlist {
 		IS_RESULTS_PAGE_COLD?: boolean;
 	};
 	continuations?: initialData[];
-};
+}
 
-export interface content {
+interface content {
 	adsEngagementPanelContentRenderer?: signInEndpoint;
 	structuredDescriptionContentRenderer?: {
 		items: {
 			menuNavigationItemRenderer: menuNavigationItemRenderer;
 		}[];
 	};
-	sectionListRenderer?: unifiedSharePanelRenderer | metadataRowHeaderRenderer;
+	sectionListRenderer?: metadataRowHeaderRenderer | unifiedSharePanelRenderer;
 	simpleText?: string;
 	verticalListRenderer?: menuNavigationItemRenderer;
-};
+}
 
-export interface searchEndpoint {
+interface searchEndpoint {
 	query?: string;
 	clickTrackingParams?: string;
 	commandMetadata?: commandMetadata;
 	searchEndpoint?: searchEndpoint;
 	params?: string;
-};
+}
 
-export interface serviceTrackingParams {
+interface serviceTrackingParams {
 	service?: string;
-	params: string | {
+	params: {
 		key: string;
 		value?: string;
 		addToOfflineButtonState?: string;
-	}[];
+	}[] | string;
 	videoIds?: string[];
 	channelIds?: string[];
-};
+}
 
-export interface commandMetadata {
+interface commandMetadata {
 	webCommandMetadata: webCommandMetadata;
-};
+}
 
-export interface watchEndpoint {
+interface watchEndpoint {
 	videoId?: string;
 	playlistId?: string;
 	index?: number;
@@ -1641,19 +1641,19 @@ export interface watchEndpoint {
 	overlay?: overlay;
 	sequenceProvider?: string;
 	sequenceParams?: string;
-};
+}
 
-export interface modalWithTitleAndButtonRenderer {
+interface modalWithTitleAndButtonRenderer {
 	title: title | viewCount;
-	content?: title | viewCount | content;
+	content?: content | title | viewCount;
 	button?: button;
 	trackingParams?: string;
 	filters?: {
 		searchFilterRenderer: metadataBadgeRenderer;
 	}[];
-};
+}
 
-export interface videoPrimaryInfoRenderer {
+interface videoPrimaryInfoRenderer {
 	title?: title;
 	viewCount?: viewCount;
 	videoActions?: videoActions;
@@ -1665,7 +1665,7 @@ export interface videoPrimaryInfoRenderer {
 	metadataRowContainer?: {
 		metadataRowContainerRenderer: metadataRowHeaderRenderer;
 	};
-	showMoreText?: viewCount | title;
+	showMoreText?: title | viewCount;
 	showLessText?: viewCount;
 	defaultExpanded?: boolean;
 	descriptionCollapsedLines?: number;
@@ -1698,9 +1698,9 @@ export interface videoPrimaryInfoRenderer {
 		thumbnailOverlaySidePanelRenderer?: thumbnailOverlayBottomPanelRenderer;
 	}[];
 	navigationEndpoint?: navigationEndpoints;
-};
+}
 
-export interface changeEngagementPanelVisibilityAction {
+interface changeEngagementPanelVisibilityAction {
 	targetId: string;
 	visibility?: string;
 	content?: content;
@@ -1736,7 +1736,7 @@ export interface changeEngagementPanelVisibilityAction {
 		playlistVideoListRenderer?: playlistPanelVideoRenderer;
 		twoColumnBrowseResultsRenderer?: {
 			tabs: {
-				tabRenderer: metadataBadgeRenderer | buttonRenderer;
+				tabRenderer: buttonRenderer | metadataBadgeRenderer;
 			}[];
 		};
 		searchPyvRenderer?: buttonRenderer;
@@ -1750,27 +1750,27 @@ export interface changeEngagementPanelVisibilityAction {
 			primaryContents: content;
 		};
 	}[];
-};
+}
 
-export interface thumbnailOverlayBottomPanelRenderer {
+interface thumbnailOverlayBottomPanelRenderer {
 	icon: icon;
 	text?: title | viewCount;
-};
+}
 
-export interface header {
+interface header {
 	engagementPanelTitleHeaderRenderer?: metadataBadgeRenderer;
 	collapsedTitle?: viewCount;
 	collapsedThumbnail?: thumbnail;
 	collapsedLabel?: title;
 	expandedTitle?: title;
 	richListHeaderRenderer?: buttonRenderer;
-};
+}
 
-export interface clickTracking {
+interface clickTracking {
 	clickTrackingParams: string;
-};
+}
 
-export interface responseContext {
+interface responseContext {
 	serviceTrackingParams: serviceTrackingParams[];
 	mainAppWebResponseContext: {
 		loggedOut: boolean;
@@ -1785,38 +1785,38 @@ export interface responseContext {
 		};
 		hasDecorated: boolean;
 	};
-};
+}
 
-export interface runs {
-	text: string | viewCount | title;
-	navigationEndpoint?: navigationEndpoints | clickTracking;
+interface runs {
+	text: title | viewCount | string;
+	navigationEndpoint?: clickTracking | navigationEndpoints;
 	style?: string;
 	bold?: boolean;
 	loggingDirectives?: unifiedSharePanelRenderer;
 	icon?: icon;
-};
+}
 
-export interface signInEndpoint {
+interface signInEndpoint {
 	hack?: boolean;
-	nextEndpoint?: navigationEndpoints | clickTracking;
+	nextEndpoint?: clickTracking | navigationEndpoints;
 	idamTag?: string;
 	continueAction?: string;
-};
+}
 
-export interface style {
+interface style {
 	styleType: string;
-};
+}
 
-export interface commonConfig {
+interface commonConfig {
 	url: string;
-};
+}
 
-export interface openPopupAction {
-	popup: {
+interface openPopupAction {
+	popup: menuRenderer | {
+		notificationActionRenderer: unifiedSharePanelRenderer;
+	} | {
 		unifiedSharePanelRenderer: unifiedSharePanelRenderer;
 	} | {
-		notificationActionRenderer: unifiedSharePanelRenderer;
-	} | menuRenderer | {
 		voiceSearchDialogRenderer: {
 			placeholderHeader: title;
 			promptHeader: title;
@@ -1838,35 +1838,35 @@ export interface openPopupAction {
 	};
 	popupType: string;
 	beReused?: boolean;
-};
+}
 
-export interface shareEntityServiceEndpoint {
+interface shareEntityServiceEndpoint {
 	serializedShareEntity: string;
 	commands?: commands[];
-};
+}
 
-export interface owner {
+interface owner {
 	videoOwnerRenderer: videoOwnerRenderer;
-};
+}
 
-export interface continuationItemRenderer {
+interface continuationItemRenderer {
 	trigger: string;
 	continuationEndpoint: navigationEndpoints;
 	button?: button;
-};
+}
 
-export interface addToPlaylistCommand {
+interface addToPlaylistCommand {
 	openMiniplayer: boolean;
 	openListPanel?: boolean;
 	videoId: string;
 	listType: string;
 	onCreateListCommand: navigationEndpoints;
 	videoIds: string[];
-};
+}
 
-export interface signalServiceEndpoint {
+interface signalServiceEndpoint {
 	signal?: string;
-	actions: commands | {
+	actions: {
 		addedVideoId?: string;
 		action?: string;
 		removedVideoId?: string;
@@ -1876,20 +1876,20 @@ export interface signalServiceEndpoint {
 		signalAction?: {
 			signal: string;
 		};
-	}[];
+	}[] | commands;
 	playlistId?: string;
-};
+}
 
-export interface playerOverlayVideoDetailsRenderer {
-	title: viewCount | title;
+interface playerOverlayVideoDetailsRenderer {
+	title: title | viewCount;
 	subtitle?: title;
 	options?: {
 		hotkeyDialogSectionOptionRenderer?: accessibilityData;
 		persistenceOption?: string;
 	}[];
-};
+}
 
-export interface videoDetails {
+interface videoDetails {
 	playerOverlayVideoDetailsRenderer?: playerOverlayVideoDetailsRenderer;
 	videoId?: string;
 	title?: string;
@@ -1906,21 +1906,21 @@ export interface videoDetails {
 	isPrivate?: boolean;
 	isUnpluggedCorpus?: boolean;
 	isLiveContent?: boolean;
-};
+}
 
-export interface feedbackEndpoint {
+interface feedbackEndpoint {
 	feedbackToken: string;
 	uiActions: {
 		hideEnclosingContainer: boolean;
 	};
-};
+}
 
-export interface overlay {
+interface overlay {
 	tooltipRenderer?: buttonRenderer;
 	reelPlayerOverlayRenderer?: buttonRenderer;
-};
+}
 
-export interface topbarLogoRenderer {
+interface topbarLogoRenderer {
 	iconImage?: icon;
 	tooltipText?: title;
 	endpoint?: navigationEndpoints;
@@ -1943,9 +1943,9 @@ export interface topbarLogoRenderer {
 	forwardButton?: button;
 	a11ySkipNavigationButton?: button;
 	voiceSearchButton?: button;
-};
+}
 
-export interface config {
+interface config {
 	webSearchboxConfig?: {
 		requestLanguage: string;
 		requestDomain: string;
@@ -1960,9 +1960,9 @@ export interface config {
 		};
 		hideCueRangeMarker: boolean;
 	};
-};
+}
 
-export interface frameworkUpdates {
+interface frameworkUpdates {
 	entityBatchUpdate: {
 		mutations: {
 			entityKey: string;
@@ -1984,9 +1984,9 @@ export interface frameworkUpdates {
 			nanos: number;
 		};
 	};
-};
+}
 
-export interface initialData {
+interface initialData {
 	responseContext: responseContext;
 	contents?: {
 		videoPrimaryInfoRenderer?: videoPrimaryInfoRenderer;
@@ -2016,7 +2016,7 @@ export interface initialData {
 		playlistVideoListRenderer?: playlistPanelVideoRenderer;
 		twoColumnBrowseResultsRenderer?: {
 			tabs: {
-				tabRenderer: metadataBadgeRenderer | buttonRenderer;
+				tabRenderer: buttonRenderer | metadataBadgeRenderer;
 			}[];
 		};
 		searchPyvRenderer?: buttonRenderer;
@@ -2061,14 +2061,14 @@ export interface initialData {
 	onResponseReceivedActions?: commands[];
 	estimatedResults?: string;
 	onResponseReceivedCommands?: commands[];
-};
+}
 
-export interface initRange {
+interface initRange {
 	start: string;
 	end: string;
-};
+}
 
-export interface playerMicroformatRenderer {
+interface playerMicroformatRenderer {
 	thumbnail: thumbnail;
 	embed?: {
 		iframeUrl: string;
@@ -2111,22 +2111,21 @@ export interface playerMicroformatRenderer {
 	linkAlternates?: {
 		hrefUrl: string;
 	}[];
-};
+}
 
-export interface microformat {
+interface microformat {
 	playerMicroformatRenderer?: playerMicroformatRenderer;
 	microformatDataRenderer?: playerMicroformatRenderer;
-};
+}
 
-export interface interpreterSafeUrl {
+interface interpreterSafeUrl {
 	privateDoNotAccessOrElseTrustedResourceUrlWrappedValue: string;
-};
+}
 
-export interface thumbnailRenderer {
+interface thumbnailRenderer {
 	playlistVideoThumbnailRenderer: playlistPanelVideoRenderer;
-};
-
-type FinalData = {
+}
+interface FinalData {
 	video: {
 		initialData: initialData;
 		initialPlayerResponse: {

@@ -6,7 +6,10 @@ import { writeFileSync } from 'fs';
 export default function TSify(...things: unknown[]): string {
 	const parsed = joinParsed(...things.map(parse));
 	const declarations = makeDeclarations(parsed);
-	return declarations.map(x => stringifyObj(x.type)).join('\n\n') +
+
+	return declarations.map(x =>
+		`interface ${x.name} ${stringifyObj(x.type)}`
+	).join('\n\n') +
 		'\ntype FinalData = ' + stringify(parsed) +
 		'\n\nexport default FinalData;\n';
 }

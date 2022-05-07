@@ -1,6 +1,5 @@
 /* eslint-disable no-else-return */
 import type { Obj } from '../utils';
-
 import { sharesOneKey, deepStrictEqual, objectSimilarity, stringSimilarity } from './utils';
 
 type NonEmptyArray<T> = [T, ...T[]];

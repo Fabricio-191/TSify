@@ -47,7 +47,7 @@ function order(a: TypeDeclaration, b: TypeDeclaration): number {
 	}else return b.uses - a.uses;
 }
 
-export default function makeDeclarations(cache: Cache, parsed: Prop): TypeDeclaration[] {
+export default function replacer(cache: Cache, parsed: Prop): TypeDeclaration[] {
 	for(const t of cache){
 		t.type = joinObjects(...t.references);
 		countUses(cache, t);
